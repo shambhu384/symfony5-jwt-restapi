@@ -1,0 +1,113 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Symfony-Rest",
+		"_postman_id": "87591017-53fb-98ee-44f2-a8994db6eff4",
+		"description": "Symfony rest api TODO App",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create an Article ",
+			"request": {
+				"url": "http://localhost:9002/api/v1/article",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/ld+json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"Test project\",\n\t\"description\": \"Product description\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get articles",
+			"request": {
+				"url": "http://localhost:9002/api/v1/articles",
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Update an Article",
+			"request": {
+				"url": "http://localhost:9002/api/v1/article/3",
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"name\": \"SOmething\",\n\t\"description\": \" not worry\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an Article",
+			"request": {
+				"url": "http://localhost:9002/api/v1/article/8",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Get Access Token",
+			"request": {
+				"url": "http://localhost:9002/api/login_check",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"description": "",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "systemuser",
+							"description": "",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Demo@100",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
