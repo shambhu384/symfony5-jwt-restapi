@@ -1,0 +1,10 @@
+fos_rest:
+    routing_loader:
+        include_format: false
+    view:
+        view_response_listener: true
+    format_listener:
+        rules:
+            - {path: ^/, priorities: [json], fallback_format: json, prefer_extension: false}
+    body_listener:
+        enabled: false
