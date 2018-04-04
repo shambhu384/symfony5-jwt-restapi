@@ -1,7 +1,8 @@
 framework:
     secret: '%env(APP_SECRET)%'
     #default_locale: en
-    #csrf_protection: true
+    csrf_protection:
+        enabled: true
     #http_method_override: true
 
     # Enables session support. Note that the session will ONLY be started if you read or write from it.
@@ -14,6 +15,8 @@ framework:
     php_errors:
         log: true
 
+    templating:
+        engines: ['twig', 'php']
     cache:
         # Put the unique name of your app here: the prefix seed
         # is used to compute stable namespaces for cache keys.
@@ -28,3 +31,10 @@ framework:
 
         # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
         #app: cache.adapter.apcu
+fos_user:
+    db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
+    firewall_name: main
+    user_class: App\Entity\User
+    from_email:
+        address: you@example.com
+        sender_name: Youk

@@ -5,6 +5,7 @@ fos_rest:
         view_response_listener: true
     format_listener:
         rules:
-            - {path: ^/, priorities: [json], fallback_format: json, prefer_extension: false}
+            - {path: ^/api/v1/, priorities: [json], fallback_format: json, prefer_extension: false}
+            - {path: ^/, priorities: [html, json, xml], fallback_format: json, prefer_extension: false}
     body_listener:
         enabled: false

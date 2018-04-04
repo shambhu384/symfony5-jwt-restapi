@@ -1,3 +1,17 @@
 #index:
 #    path: /
 #    controller: App\Controller\DefaultController::index
+
+fos_user_security_check:
+    path: /api/login_check
+    defaults: { _controller: FOSUserBundle:Security:check }
+    requirements:
+        _method: POST
+
+fos_user_security_login:
+    path:  /login
+    defaults:  { _controller: FOSUserBundle:Security:login, _method: POST }
+
+fos_user_security_logout:
+    path:    /logout
+    defaults:  { _controller: FOSUserBundle:Security:logout, _method: POST }

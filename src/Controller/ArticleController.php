@@ -83,4 +83,11 @@ class ArticleController extends Controller {
         $em->flush();
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
+
+    /**
+     * @Route("/test")
+     */
+    public function test() {
+        return $this->render('base.html.twig');
+    }
 }
