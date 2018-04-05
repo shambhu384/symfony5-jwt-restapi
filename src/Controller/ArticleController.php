@@ -12,6 +12,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
 use App\Entity\Article;
+use App\Entity\User;
 
 /**
  * Brand Controller
@@ -29,9 +30,13 @@ class ArticleController extends Controller {
      */
     public function postArticleAction(Request $request)
     {
+        $postdata = json_decode($request->getContent());
         $article = new Article();
-        $article->setFromJson($request->getContent());
+        $article->setName($postdata->name);
+        $article->setDescription($postdata->description);
         $em = $this->getDoctrine()->getManager();
+        $user = $em->getRepository(User::class)->find($postdata->userid);
+        $article->setUser($user);
         $em->persist($article);
         $em->flush();
         return View::create($article, Response::HTTP_CREATED , []);
@@ -39,7 +44,7 @@ class ArticleController extends Controller {
 
     /**
      * Lists all Articles.
-     * @FOSRest\Get("/articles")
+     * @FOSRest\Get("/article")
      *
      * @return array
 	 */
@@ -84,10 +89,4 @@ class ArticleController extends Controller {
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
 
-    /**
-     * @Route("/test")
-     */
-    public function test() {
-        return $this->render('base.html.twig');
-    }
 }

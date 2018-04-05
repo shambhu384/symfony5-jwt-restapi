@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use App\Entity\Article;
+use Doctrine\ORM\Mapping\OneToMany;
 
 /**
  * @ORM\Entity
@@ -18,10 +21,15 @@ class User extends BaseUser
      */
     protected $id;
 
+    /**
+     * One user has Many Articles.
+     * @OneToMany(targetEntity="Article", mappedBy="user")
+     */
+    private $articles;
+
     public function __construct()
     {
         parent::__construct();
-        // your own logic
+        $this->articles = new ArrayCollection();
     }
 }
-

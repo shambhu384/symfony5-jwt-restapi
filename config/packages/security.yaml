@@ -1,51 +1,58 @@
-security:                                                                                                                                                                                                                                                                                 
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers                                                                                                                                                                                               
-    encoders:                                                                                                                                                                                                                                                                             
-        FOS\UserBundle\Model\UserInterface: sha512                                                                                                                                                                                                                                        
-                                                                                                                                                                                                                                                                                          
-    providers:                                                                                                                                                                                                                                                                            
-        fos_userbundle:                                                                                                                                                                                                                                                                   
-            id: fos_user.user_provider.username_email                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
-                                                                                                                                                                                                                                                                                          
+security:
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    encoders:
+        FOS\UserBundle\Model\UserInterface: sha512
+    providers:
+        fos_userbundle:
+            id: fos_user.user_provider.username_email
+
     firewalls:
 
-        dev:                                                                                                                                                                                                                                                                              
-            pattern: ^/(_(profiler|wdt)|css|images|js)/                                                                                                                                                                                                                                   
-            security: false                                                                                                                                                                                                                                                               
-            # activate different ways to authenticate                                                                                                                                                                                                                                     
-                                                                                                                                                                                                                                                                                          
-            # http_basic: true                                                                                                                                                                                                                                                            
-            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate                                                                                                                                                                                
-                                                                                                                                                                                                                                                                                          
-            # form_login: true                                                                                                                                                                                                                                                            
-            # https://symfony.com/doc/current/security/form_login_setup.html                                                                                                                                                                                                              
-        login:                                                                                                                                                                                                                                                                            
-            pattern:  ^/api/login_check                                                                                                                                                                                                                                                  
-            stateless: true                                                                                                                                                                                                                                                               
-            anonymous: true                                                                                                                                                                                                                                                               
-            provider: fos_userbundle                                                                                                                                                                                                                                                      
-            form_login:                                                                                                                                                                                                                                                                   
-                check_path:     /api/login_check                                                                                                                                                                                                                                          
-                username_parameter: username                                                                                                                                                                                                                                              
-                password_parameter: password                                                                                                                                                                                                                                              
-                require_previous_session: false                                                                                                                                                                                                                                           
-                success_handler: lexik_jwt_authentication.handler.authentication_success                                                                                                                                                                                                  
-                failure_handler: lexik_jwt_authentication.handler.authentication_failure                                                                                                                                                                                                  
-        api:                                                                                                                                                                                                                                                                              
-            pattern:   ^/api                                                                                                                                                                                                                                                              
-            stateless: true                                                                                                                                                                                                                                                               
-            provider: fos_userbundle                                                                                                                                                                                                                                                      
-            lexik_jwt:                                                                                                                                                                                                                                                                    
-                authorization_header:                                                                                                                                                                                                                                                     
-                    enabled: true                                                                                                                                                                                                                                                         
-                    prefix:  Bearer                                                                                                                                                                                                                                                       
-                throw_exceptions:        false                                                                                                                                                                                                                                            
-                create_entry_point:      true                                                                                                                                                                                                                                             
-    # Easy way to control access for large sections of your site                                                                                                                                                                                                                          
-    # Note: Only the *first* access control that matches will be used                                                                                                                                                                                                                     
-    access_control:                                                                                                                                                                                                                                                                       
-        # - { path: ^/admin, roles: ROLE_ADMIN }                                                                                                                                                                                                                                          
-        # - { path: ^/profile, roles: ROLE_USER }                                                                                                                                                                                                                                         
-        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }                                                                                                                                                                                                               
-        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }                                                                                                                                                                                                               
-        - { path: ^/api, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+            # activate different ways to authenticate
+            # http_basic: true
+            # https://symfony.com/doc/current/security.html#a-configuring-how-your-users-will-authenticate
+            # form_login: true
+            # https://symfony.com/doc/current/security/form_login_setup.html
+
+        login:
+            pattern:  ^/api/login_check
+            stateless: true
+            anonymous: true
+            provider: fos_userbundle
+            form_login:
+                check_path:     /api/login_check
+                username_parameter: username
+                password_parameter: password
+                require_previous_session: false
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+        user_create:
+            pattern:  ^/api/v1/meeting/user
+            anonymous: true
+            stateless: true
+            provider: fos_userbundle
+
+        api:
+            pattern:   ^/api/vi/article
+            stateless: true
+            provider: fos_userbundle
+            lexik_jwt:
+                authorization_header:
+                    enabled: true
+                    prefix:  Bearer
+                throw_exceptions:        false
+                create_entry_point:      true
+                    # Easy way to control access for large sections of your site
+                    # Note: Only the *first* access control that matches will be used
+
+    access_control:
+        # - { path: ^/admin, roles: ROLE_ADMIN }
+        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/meeting/user, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/article, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
