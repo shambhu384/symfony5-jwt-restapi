@@ -51,3 +51,26 @@ services:
         public: true
         tags:
            - rule_manager.rule
+
+    get_set_method_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
+        public: false
+        tags: [serializer.normalizer]
+
+    app.encoder.json:
+        class: Symfony\Component\Serializer\Encoder\JsonEncoder
+        public: true
+
+    app.normalizer.user:
+        class: App\Serializer\Normalizer\UserNormalizer
+        public: true
+
+    serializer.default:
+        class: Symfony\Component\Serializer\Serializer
+        public: false
+        arguments:
+            - ['@app.normalizer.user', '@serializer.normalizer.object']
+            - ['@app.encoder.json']
+        tags:
+            - normalizer
+

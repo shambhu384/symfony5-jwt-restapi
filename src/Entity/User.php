@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\OneToMany;
  * @ORM\Entity
  * @ORM\Table(name="fos_user")
  */
-class User extends BaseUser
+class User extends BaseUser implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -31,5 +31,19 @@ class User extends BaseUser
     {
         parent::__construct();
         $this->articles = new ArrayCollection();
+    }
+
+    public function jsonSerialize() {
+        return array(
+            "username" => $this->getUsername()
+        );
+    }
+    public function toJson()
+    {
+        return json_encode([
+            'customer' => [
+                'email' => $this->email,
+            ]
+        ]);
     }
 }

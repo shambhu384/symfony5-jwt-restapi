@@ -18,10 +18,15 @@ class MeetingUserController extends Controller
     public function postUserAction(Request $request)
     {
         $userManager = $this->get('fos_user.user_manager');
+        // Check user already exists
         $user = $userManager->findUserByUsername($request->get('username'));
 
         if($user) {
-            throw new HttpException(400, "User already exists.");
+            // check duplicate email
+            if($user->getEmail() == $request->get('email'))
+                throw new HttpException(400, 'Email already exists.');
+
+            throw new HttpException(400, 'Username already exists.');
         }
 
         $user = $userManager->createUser();
@@ -30,6 +35,7 @@ class MeetingUserController extends Controller
         $user->setPlainPassword($request->get('password'));
         $user->setEnabled(true);
         $user->setSuperAdmin(true);
+        // Save user
         $userManager->updateUser($user);
         return View::create($user, Response::HTTP_CREATED , []);
     }

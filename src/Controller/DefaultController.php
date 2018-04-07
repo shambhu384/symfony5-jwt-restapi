@@ -16,8 +16,6 @@ class DefaultController extends Controller
      */
     public function index()
     {
-        $data = [2000,4000,8000,10000, 'abc', 20000, 40000, 'xyz'];
-
         $ruleManager = $this->get('app.rule_manager');
 
         $data = $ruleManager->applyRules($data);

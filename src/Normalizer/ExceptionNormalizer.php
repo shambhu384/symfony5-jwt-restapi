@@ -3,20 +3,21 @@
 namespace App\Normalizer;
 
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use App\Entity\User;
 
 class ExceptionNormalizer implements NormalizerInterface
 {
 
-    public function __construct() {
-        die('sd');
-    }
     public function normalize($object, $format = null, array $context = array())
     {
-        return array('code' => 300);
+        return [
+            'id'     => $object->getId(),
+            'name'   => $object->getEmail(),
+        ];
     }
 
     public function supportsNormalization($data, $format = null)
     {
-        return $data instanceof \My\Exception;
+        return $data instanceof User;
     }
 }
