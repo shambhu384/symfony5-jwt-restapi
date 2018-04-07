@@ -2,10 +2,21 @@ fos_rest:
     routing_loader:
         include_format: false
     view:
-        view_response_listener: true
+        view_response_listener: 'force'
     format_listener:
         rules:
             - {path: ^/api/v1/, priorities: [json], fallback_format: json, prefer_extension: false}
             - {path: ^/, priorities: [html, json, xml], fallback_format: json, prefer_extension: false}
     body_listener:
         enabled: false
+
+    exception:
+        enabled: true
+        codes:
+            Symfony\Component\Routing\Exception\ResourceNotFoundException: 404
+        messages:
+            Symfony\Component\Routing\Exception\ResourceNotFoundException: true
+            Symfony\Component\HttpKernel\Exception\BadRequestHttpException: true
+            \Exception: true
+    service:
+        view_handler: fos_rest.view_handler.default

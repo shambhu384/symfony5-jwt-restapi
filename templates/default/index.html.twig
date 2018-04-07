@@ -10,11 +10,10 @@
 
 <div class="example-wrapper">
     <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
     <ul>
-        <li>Your controller at <code>src/Controller/DefaultController.php</code></li>
-        <li>Your template at <code>templates/default/index.html.twig</code></li>
+    {% for item in data %}
+        <li>{{ item }}</li>
+    {% endfor %}
     </ul>
 </div>
 {% endblock %}

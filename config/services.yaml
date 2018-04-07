@@ -1,5 +1,3 @@
-# Put parameters here that don't need to change on each machine where the app is deployed
-# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
 
@@ -28,3 +26,28 @@ services:
     # please note that last definitions always *replace* previous ones
     sensio_framework_extra.view.listener:
         alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
+
+    fos_rest.serializer.exception_normalizer.jms:
+        class: App\Serializer\Normalizer\ExceptionHandler
+        arguments:
+            - '@fos_rest.exception.messages_map'
+            - '%kernel.debug%'
+        public: false       # Allows optimizing the container by removing unused services; this also means
+        tags:
+           - jms_serializer.subscribing_handler
+
+    app.rule_manager:
+        class: App\Service\RuleManager
+        public: true
+
+    app.rule_manager.is_numeric:
+        class: App\Service\IsNumericRule
+        public: true
+        tags:
+           - rule_manager.rule
+
+    app.rule_manager.greater_than:
+        class: App\Service\GreaterThanRule
+        public: true
+        tags:
+           - rule_manager.rule
