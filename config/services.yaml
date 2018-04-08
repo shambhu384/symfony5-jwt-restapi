@@ -65,12 +65,3 @@ services:
         class: App\Serializer\Normalizer\UserNormalizer
         public: true
 
-    serializer.default:
-        class: Symfony\Component\Serializer\Serializer
-        public: false
-        arguments:
-            - ['@app.normalizer.user', '@serializer.normalizer.object']
-            - ['@app.encoder.json']
-        tags:
-            - normalizer
-

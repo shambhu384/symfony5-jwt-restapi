@@ -14,5 +14,4 @@ return [
     FOS\UserBundle\FOSUserBundle::class => ['all' => true],
     Symfony\Bundle\SwiftmailerBundle\SwiftmailerBundle::class => ['all' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
-//    App\DependencyInjection\RuleManagerCompilerPass::class => ['all' => true]
 ];

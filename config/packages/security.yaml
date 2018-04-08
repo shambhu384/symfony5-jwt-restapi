@@ -32,13 +32,16 @@ security:
 
         user_create:
             pattern:  ^/api/v1/meeting/user
+            methods: [POST]
             anonymous: true
             stateless: true
             provider: fos_userbundle
 
         api:
-            pattern:   ^/api/vi/article
+            pattern:   ^/api/v1/meeting
+            methods: [POST, PATCH, DELETE]
             stateless: true
+            anonymous: false
             provider: fos_userbundle
             lexik_jwt:
                 authorization_header:
@@ -54,5 +57,6 @@ security:
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/meeting, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
         - { path: ^/api/v1/meeting/user, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/article, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
+        - { path: ^/api/v1/meeting/registration, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }

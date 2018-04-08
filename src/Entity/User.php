@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping\OneToMany;
  * @ORM\Entity
  * @ORM\Table(name="fos_user")
  */
-class User extends BaseUser implements \JsonSerializable
+class User extends BaseUser
 {
     /**
      * @ORM\Id
@@ -22,28 +22,87 @@ class User extends BaseUser implements \JsonSerializable
     protected $id;
 
     /**
-     * One user has Many Articles.
-     * @OneToMany(targetEntity="Article", mappedBy="user")
+     * @ORM\Column(type="string", length=100)
      */
-    private $articles;
+    protected $fullname;
 
+	/**
+	 * @var \Doctrine\Common\Collections\Collection|Meeting[]
+	 *
+	 * @ORM\ManyToMany(targetEntity="Meeting", inversedBy="users")
+	 * @ORM\JoinTable(
+	 *  name="user_meeting",
+	 *  joinColumns={
+	 *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+	 *  },
+	 *  inverseJoinColumns={
+	 *      @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
+	 *  }
+	 * )
+	 */
+    protected $meetings;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $created;
+
+    /**
+     * Constructor
+     */
     public function __construct()
     {
         parent::__construct();
-        $this->articles = new ArrayCollection();
+        $this->meetings = new ArrayCollection();
+        $this->created = new \DateTime("now");
     }
 
-    public function jsonSerialize() {
-        return array(
-            "username" => $this->getUsername()
-        );
-    }
-    public function toJson()
+    /**
+     * Get fullName.
+     *
+     * @return fullName.
+     */
+    public function getFullName()
     {
-        return json_encode([
-            'customer' => [
-                'email' => $this->email,
-            ]
-        ]);
+        return $this->fullname;
     }
+
+    /**
+     * Set fullName.
+     *
+     * @param fullName the value to set.
+     */
+    public function setFullName($fullname)
+    {
+		$this->fullname = $fullname;
+	}
+
+    public function getCreated() {
+        return $this->created;
+    }
+	/**
+	 * @param Meeting $meeting
+	 */
+	public function setMeeting(Meeting $meeting)
+	{
+		// avoid duplicates
+		if ($this->meetings->contains($meeting)) {
+			return;
+		}
+		$this->meetings->add($meeting);
+		$meeting->setUser($this);
+	}
+	/**
+	 * @param Meeting $meeting
+	 */
+	public function removeMeeting(Meeting $meeting)
+	{
+		// avoid duplicates
+		if (!$this->meetings->contains($meeting)) {
+			return;
+		}
+
+		$this->meetings->removeElement($meeting);
+		$meeting->removeUser($this);
+	}
 }

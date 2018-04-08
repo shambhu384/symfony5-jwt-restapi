@@ -25,11 +25,7 @@ class ExceptionHandler extends BaseExceptionHandler
             if (array_key_exists('status_code', $templateData)) {
                 $data['code'] = $statusCode = $templateData['status_code'];
             }
-            if(array_key_exists('status', $templateData)) {
-                $data['status'] = $statusCode = $templateData['status'];
-            }
         }
-
         $data['message'] = $this->getExceptionMessage($exception, isset($statusCode) ? $statusCode : null);
 
         return $data;

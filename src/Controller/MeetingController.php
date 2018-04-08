@@ -11,8 +11,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
-use App\Entity\Article;
+use App\Entity\Meeting;
 use App\Entity\User;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Meeting Controller
@@ -28,18 +29,25 @@ class MeetingController extends Controller {
      *
      * @return array
      */
-    public function postArticleAction(Request $request)
+    public function postMeetingAction(Request $request)
     {
         $postdata = json_decode($request->getContent());
-        $article = new Article();
-        $article->setName($postdata->name);
-        $article->setDescription($postdata->description);
+        $meeting = new Meeting();
+        $meeting->setName($postdata->name);
+        $meeting->setDescription($postdata->description);
+        $meeting->setDateTime(new \DateTime($postdata->date));
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository(User::class)->find($postdata->userid);
-        $article->setUser($user);
-        $em->persist($article);
+        $meeting->setUser($user);
+        $em->persist($meeting);
         $em->flush();
-        return View::create($article, Response::HTTP_CREATED , []);
+        $response = array(
+            'id' => $meeting->getId(),
+            'name' => $meeting->getName(),
+            'description' => $meeting->getDescription(),
+            'date' => $meeting->getDateTime()
+        );
+        return View::create($response, Response::HTTP_CREATED , []);
     }
 
     /**
@@ -48,14 +56,35 @@ class MeetingController extends Controller {
      *
      * @return array
 	 */
-	public function getArticleAction()
+	public function getMeetingAction()
 	{
-		$repository = $this->getDoctrine()->getRepository(Article::class);
+		$repository = $this->getDoctrine()->getRepository(Meeting::class);
 
 		// query for a single Product by its primary key (usually "id")
-		$article = $repository->findall();
+        $meetings = $repository->findall();
+        // Move this in Meeting normalizer
+        $response = array();
+        foreach($meetings as $meeting) {
+            // find users
+            $users = [];
+            foreach($meeting->getUsers() as $user) {
+                $users[] = array(
+                    'id' => $user->getId(),
+                    'fullname' => $user->getFullName(),
+                    'email' => $user->getEmail()
+                );
+            }
 
-		return View::create($article, Response::HTTP_OK , []);
+            $response[] = array(
+                'id' => $meeting->getId(),
+                'name' => $meeting->getName(),
+                'description' => $meeting->getDescription(),
+                'date' => $meeting->getDateTime(),
+                'users' => $users
+            );
+        }
+
+		return View::create($response, Response::HTTP_OK , []);
     }
 
     /**
@@ -64,27 +93,37 @@ class MeetingController extends Controller {
      *
      * @return array
 	 */
-    public function putArticleAction($id, Request $request) {
+    public function putMeetingAction($id, Request $request) {
         $em = $this->getDoctrine()->getManager();
-        $article = $em->getRepository(Article::class)->find($id);
-        $article->setFromJson($request->getContent());
-        $em->persist($article);
+        $meeting = $em->getRepository(Meeting::class)->find($id);
+        if(!$meeting) {
+            throw new HttpException(404, 'Meeting not found');
+        }
+        $postdata = json_decode($request->getContent());
+        $meeting->setName($postdata->name);
+        $meeting->setDescription($postdata->description);
+        $meeting->setDateTime(new \DateTime($postdata->date));
+        $em->persist($meeting);
         $em->flush();
-		return View::create($article, Response::HTTP_OK , []);
+		return View::create($meeting, Response::HTTP_OK , []);
     }
 
     /**
      * Delete an Meeting.
      *
-     * @FOSRest\Delete(path = "/meeting/{id}")
+     * @FOSRest\Delete(path = "/meeting")
      *
      * @return array
      */
-    public function deleteAction($id)
+    public function deleteAction(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
-        $article = $em->getRepository(Article::class)->find($id);
-        $em->remove($article);
+
+        $meeting = $em->getRepository(Meeting::class)->find($request->get('meeting_id'));
+        if(!$meeting) {
+            throw new HttpException(404, 'Meeting not found');
+        }
+        $em->remove($meeting);
         $em->flush();
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
