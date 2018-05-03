@@ -14,6 +14,9 @@ use FOS\RestBundle\Controller\Annotations as FOSRest;
 use App\Entity\Meeting;
 use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Event\MeetingRegisteredEvent;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Meeting Controller
@@ -29,18 +32,30 @@ class MeetingController extends Controller {
      *
      * @return array
      */
-    public function postMeetingAction(Request $request)
+    public function postMeetingAction(Request $request, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
     {
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
         $meeting->setName($postdata->name);
         $meeting->setDescription($postdata->description);
         $meeting->setDateTime(new \DateTime($postdata->date));
+
+        $errors = $validator->validate($meeting);
+
+        if (count($errors) > 0) {
+
+            return View::create(array('errors' => $errors), Response::HTTP_BAD_REQUEST);
+        }
+
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository(User::class)->find($postdata->userid);
         $meeting->setUser($user);
         $em->persist($meeting);
         $em->flush();
+
+        $meetingEvent = new MeetingRegisteredEvent($meeting);
+        $dispatcher->dispatch('meeting.registered', $meetingEvent);
+
         $response = array(
             'id' => $meeting->getId(),
             'name' => $meeting->getName(),
