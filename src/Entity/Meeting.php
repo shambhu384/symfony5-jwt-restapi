@@ -7,6 +7,7 @@ use App\Entity\User;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -20,12 +21,16 @@ class Meeting {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
+
     /**
+     * @Assert\NotBlank()
+     * @Assert\Length(min=10)
      * @ORM\Column(type="string", length=100)
      */
     public $name;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="text")
      */
     public $description;
