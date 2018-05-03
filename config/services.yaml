@@ -65,3 +65,8 @@ services:
         class: App\Serializer\Normalizer\UserNormalizer
         public: true
 
+    app.listener.meeting_registered:
+        class: App\EventListener\MeetingRegisteredListener
+        tags:
+            - { name: kernel.event_listener, event: meeting.registered }
+
