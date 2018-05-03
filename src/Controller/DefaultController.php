@@ -12,17 +12,12 @@ use App\Service\GreaterThanRule;
 class DefaultController extends Controller
 {
     /**
-     * @Route("/default", name="default")
+     * @Route("/", name="Landingpage")
      */
     public function index()
     {
-        $ruleManager = $this->get('app.rule_manager');
-
-        $data = $ruleManager->applyRules($data);
-
         return $this->render('default/index.html.twig', [
             'controller_name' => 'DefaultController',
-            'data' => $data
         ]);
     }
 }
