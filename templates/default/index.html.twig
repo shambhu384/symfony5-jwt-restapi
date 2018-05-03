@@ -1,19 +1,34 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello {{ controller_name }}!{% endblock %}
+{% block title %} Meeting api For App Development {% endblock %}
 
 {% block body %}
 <style>
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
-
 <div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-    <ul>
-    {% for item in data %}
-        <li>{{ item }}</li>
-    {% endfor %}
-    </ul>
+	<h2>Free Meeting RestAPI for Mobile app developement</h2>
+	<hr>
+	<p>Api features</p>
+	<ul>
+	<li>JWT Authentication</li>
+	<li>Manage Meetings</li>
+	<li>Registration/Unregistration for Meeting</li>
+	</ul>
+	<a href="http://api.learningpage.in/api/v1/meeting">See Meetings</a>	
+	<br/>
+	<br/>
+    <a download="download" href="https://raw.githubusercontent.com/shambhu384/symfony4-jwt-restapi/master/Symfony-Rest.postman_collection.json">
+        <img src="https://www.getpostman.com/img/v2/logo-white.svg" style="background: #ccc; padding: 7px;"><br/>
+        Download postman file
+    </a>
+    <br/>
+   <p style="text-align:right">Source code <a href="https://github.com/shambhu384/symfony4-jwt-restapi">explore</a></p>
+</div>
+<img style="height: 737px;" src="http://learningpage.in/uploads/meeting_api.png"/>
+<div class="example-wrapper">
+Need any help: <a href="mailto:shambhu384@gmail.com">Email me</a>
 </div>
 {% endblock %}
+
