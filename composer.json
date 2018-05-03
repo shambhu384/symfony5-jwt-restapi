@@ -14,11 +14,13 @@
         "symfony/framework-bundle": "^4.0",
         "symfony/lts": "^4@dev",
         "symfony/maker-bundle": "^1.3",
+        "symfony/monolog-bundle": "^3.2",
         "symfony/orm-pack": "^1.0",
         "symfony/serializer": "^4.0",
         "symfony/swiftmailer-bundle": "^3.2",
         "symfony/templating": "^4.0",
         "symfony/twig-bundle": "^4.0",
+        "symfony/validator": "^4.0",
         "symfony/yaml": "^4.0"
     },
     "require-dev": {
