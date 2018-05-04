@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use FOS\UserBundle\Model\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -48,6 +49,12 @@ class User extends BaseUser
     private $created;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\UserDevice", mappedBy="userid")
+     */
+    private $userDevices;
+
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -55,6 +62,7 @@ class User extends BaseUser
         parent::__construct();
         $this->meetings = new ArrayCollection();
         $this->created = new \DateTime("now");
+        $this->userDevices = new ArrayCollection();
     }
 
     /**
@@ -104,5 +112,34 @@ class User extends BaseUser
 
 		$this->meetings->removeElement($meeting);
 		$meeting->removeUser($this);
-	}
+    }
+
+    /**
+     * @return Collection|UserDevice[]
+     */
+    public function getUserDevices(): Collection
+    {
+        return $this->userDevices;
+    }
+
+    public function addUserDevice(UserDevice $userDevice): self
+    {
+        if (!$this->userDevices->contains($userDevice)) {
+            $this->userDevices[] = $userDevice;
+            $userDevice->setUserid($this);
+        }
+        return $this;
+    }
+
+    public function removeUserDevice(UserDevice $userDevice): self
+    {
+        if ($this->userDevices->contains($userDevice)) {
+            $this->userDevices->removeElement($userDevice);
+            // set the owning side to null (unless already changed)
+            if ($userDevice->getUserid() === $this) {
+                $userDevice->setUserid(null);
+            }
+        }
+        return $this;
+    }
 }
