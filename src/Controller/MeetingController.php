@@ -71,7 +71,7 @@ class MeetingController extends Controller {
      *
      * @return array
 	 */
-	public function getMeetingAction()
+	public function getMeetingsAction()
 	{
 		$repository = $this->getDoctrine()->getRepository(Meeting::class);
 
@@ -100,6 +100,51 @@ class MeetingController extends Controller {
         }
 
 		return View::create($response, Response::HTTP_OK , []);
+    }
+
+    /**
+     * Get Meeting.
+     * @FOSRest\Get(path = "/meeting/{id}")
+     *
+     * @return array
+	 */
+	public function getMeetingAction($id)
+	{
+		$repository = $this->getDoctrine()->getRepository(Meeting::class);
+
+        // query for a single Product by its primary key (usually "id")
+        $meeting = $repository->find($id);
+        if(!$meeting) {
+            throw new HttpException(404, 'Meeting not found');
+        }
+        // Move this in Meeting normalizer
+        $response = array(
+            'id' => $meeting->getId(),
+            'name' => $meeting->getName(),
+            'description' => $meeting->getDescription(),
+            'date' => $meeting->getDateTime(),
+            'users' => [],
+            'tags' => []
+        );
+        $users = $meeting->getUsers();
+        if($users) {
+            foreach($users as $user) {
+                $response['users'][] = array(
+                    'id' => $user->getId(),
+                    'fullname' => $user->getFullName(),
+                    'email' => $user->getEmail(),
+                );
+            }
+        }
+
+        $tags = $meeting->getTags();
+        if($tags) {
+            foreach($tags as $tag) {
+                $response['tags'][] = $tag->getName();
+            }
+        }
+
+        return View::create($response, Response::HTTP_OK , []);
     }
 
     /**
