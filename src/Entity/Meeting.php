@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use App\Entity\User;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -45,7 +46,12 @@ class Meeting {
 	 *
 	 * @ORM\ManyToMany(targetEntity="User", mappedBy="meetings")
 	 */
-	protected $users;
+    protected $users;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="meetings")
+     */
+    private $tags;
 
     /**
      * Constructor
@@ -53,6 +59,7 @@ class Meeting {
     public function __construct()
     {
 		$this->users = new ArrayCollection();
+        $this->tags = new ArrayCollection();
     }
 
 
@@ -139,6 +146,28 @@ class Meeting {
 		$user->removeMeeting($this);
 	}
 
+	/**
+	 * @param User $user
+	 */
+	public function setTag(Tag $tag)
+	{
+		if ($this->tags->contains($tag)) {
+			return;
+		}
+		$this->tags->add($tag);
+		$tag->setMeeting($this);
+	}
+	/**
+	 * @param User $user
+	 */
+	public function removeTag(Tag $tag)
+	{
+		if (!$this->tags->contains($tag)) {
+			return;
+		}
+		$this->tags->removeElement($tag);
+		$tag->removeMeeting($this);
+	}
 
     /**
      * Get datetime.
@@ -168,6 +197,24 @@ class Meeting {
     public function getUsers()
     {
         return $this->users;
+    }
+
+    /**
+     * @return Collection|Tag[]
+     */
+    public function getTags(): Collection
+    {
+        return $this->tags;
+    }
+
+    public function addTag(Tag $tag): self
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags[] = $tag;
+            $tag->addMeeting($this);
+        }
+
+        return $this;
     }
 
 }
