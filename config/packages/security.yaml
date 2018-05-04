@@ -51,6 +51,18 @@ security:
                 create_entry_point:      true
                     # Easy way to control access for large sections of your site
                     # Note: Only the *first* access control that matches will be used
+        tag:
+            pattern:   ^/api/v1/tag
+            methods: [POST, PATCH, DELETE]
+            stateless: true
+            anonymous: false
+            provider: fos_userbundle
+            lexik_jwt:
+                authorization_header:
+                    enabled: true
+                    prefix:  Bearer
+                throw_exceptions:        false
+                create_entry_point:      true
 
     access_control:
         # - { path: ^/admin, roles: ROLE_ADMIN }
@@ -58,5 +70,6 @@ security:
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/meeting, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
+        - { path: ^/api/v1/tag, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/meeting/user, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/v1/meeting/registration, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
