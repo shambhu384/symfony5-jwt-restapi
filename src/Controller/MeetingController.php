@@ -16,7 +16,10 @@ use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use App\Event\MeetingRegisteredEvent;
+use App\MeetingEvents;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 /**
  * Meeting Controller
@@ -54,7 +57,7 @@ class MeetingController extends Controller {
         $em->flush();
 
         $meetingEvent = new MeetingRegisteredEvent($meeting);
-        $dispatcher->dispatch('meeting.registered', $meetingEvent);
+        $dispatcher->dispatch(MeetingEvents::MEETING_REGISTERED, $meetingEvent);
 
         $response = array(
             'id' => $meeting->getId(),
@@ -68,15 +71,20 @@ class MeetingController extends Controller {
     /**
      * Lists all Meetings.
      * @FOSRest\Get("/meeting")
+     * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
+     * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      *
      * @return array
 	 */
-	public function getMeetingsAction()
+	public function getMeetingsAction(ParamFetcherInterface $paramFetcher)
 	{
 		$repository = $this->getDoctrine()->getRepository(Meeting::class);
 
-		// query for a single Product by its primary key (usually "id")
-        $meetings = $repository->findall();
+        // add pagination on data using ParamFetcherInterface
+        $limit = $paramFetcher->get('limit');
+        $page = $limit * ($paramFetcher->get('page') - 1);
+
+        $meetings = $repository->findBy(array(), null, $limit, $page);
         // Move this in Meeting normalizer
         $response = array();
         foreach($meetings as $meeting) {
