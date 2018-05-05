@@ -20,6 +20,7 @@ use App\MeetingEvents;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use App\Services\Interfaces\MeetingInterface;
 
 /**
  * Meeting Controller
@@ -29,7 +30,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 
 class MeetingController extends Controller {
 
-	/**
+    /**
      * Create Meeting.
      * @FOSRest\Post("/meeting")
      *
@@ -75,11 +76,10 @@ class MeetingController extends Controller {
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      *
      * @return array
-	 */
-	public function getMeetingsAction(ParamFetcherInterface $paramFetcher)
-	{
-		$repository = $this->getDoctrine()->getRepository(Meeting::class);
-
+     */
+    public function getMeetingsAction(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher)
+    {
+        $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
@@ -106,8 +106,7 @@ class MeetingController extends Controller {
                 'users' => $users
             );
         }
-
-		return View::create($response, Response::HTTP_OK , []);
+        return View::create($response, Response::HTTP_OK , []);
     }
 
     /**
@@ -115,10 +114,10 @@ class MeetingController extends Controller {
      * @FOSRest\Get(path = "/meeting/{id}")
      *
      * @return array
-	 */
-	public function getMeetingAction($id)
-	{
-		$repository = $this->getDoctrine()->getRepository(Meeting::class);
+     */
+    public function getMeetingAction($id)
+    {
+        $repository = $this->getDoctrine()->getRepository(Meeting::class);
 
         // query for a single Product by its primary key (usually "id")
         $meeting = $repository->find($id);
@@ -160,7 +159,7 @@ class MeetingController extends Controller {
      * @FOSRest\Put(path = "/meeting/{id}")
      *
      * @return array
-	 */
+     */
     public function putMeetingAction($id, Request $request) {
         $em = $this->getDoctrine()->getManager();
         $meeting = $em->getRepository(Meeting::class)->find($id);
@@ -173,7 +172,7 @@ class MeetingController extends Controller {
         $meeting->setDateTime(new \DateTime($postdata->date));
         $em->persist($meeting);
         $em->flush();
-		return View::create($meeting, Response::HTTP_OK , []);
+        return View::create($meeting, Response::HTTP_OK , []);
     }
 
     /**
