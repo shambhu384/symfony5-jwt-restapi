@@ -70,3 +70,7 @@ services:
         tags:
             - { name: kernel.event_listener, event: meeting.registered }
 
+# define services
+    App\Services\MeetingService: ~
+
+    App\Services\Interfaces\MeetingInterface: '@App\Services\MeetingService'
