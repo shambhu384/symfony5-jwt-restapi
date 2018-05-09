@@ -53,7 +53,6 @@ class User extends BaseUser
      */
     private $userDevices;
 
-
     /**
      * Constructor
      */

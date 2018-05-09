@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use App\Services\Interfaces\MeetingInterface;
+use FOS\RestBundle\Controller\Annotations\RequestParam;
 
 /**
  * Meeting Controller
@@ -72,8 +73,11 @@ class MeetingController extends Controller {
     /**
      * Lists all Meetings.
      * @FOSRest\Get("/meeting")
+     *
+     * @RequestParam(name="search", requirements="[a-z]+", description="search")
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
+     * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
      *
      * @return array
      */
@@ -84,7 +88,7 @@ class MeetingController extends Controller {
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
 
-        $meetings = $repository->findBy(array(), null, $limit, $page);
+        $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
         // Move this in Meeting normalizer
         $response = array();
         foreach($meetings as $meeting) {
@@ -106,7 +110,10 @@ class MeetingController extends Controller {
                 'users' => $users
             );
         }
-        return View::create($response, Response::HTTP_OK , []);
+        return View::create(array(
+            "metadata" => array("limit" => $limit, "start"=> $page),
+            'collections' => $response
+        ), Response::HTTP_OK , []);
     }
 
     /**
