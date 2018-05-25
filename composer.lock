@@ -3927,16 +3927,16 @@
         },
         {
             "name": "symfony/maker-bundle",
-            "version": "v1.4.4",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/maker-bundle.git",
-                "reference": "eeb9027bbd3472f2d76455cc478b04bbb0eab932"
+                "reference": "bb0485a3b2eecc561eff735109316677e18fb1d1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/eeb9027bbd3472f2d76455cc478b04bbb0eab932",
-                "reference": "eeb9027bbd3472f2d76455cc478b04bbb0eab932",
+                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/bb0485a3b2eecc561eff735109316677e18fb1d1",
+                "reference": "bb0485a3b2eecc561eff735109316677e18fb1d1",
                 "shasum": ""
             },
             "require": {
@@ -3988,7 +3988,7 @@
                 "scaffold",
                 "scaffolding"
             ],
-            "time": "2018-05-02T13:20:32+00:00"
+            "time": "2018-05-17T19:26:29+00:00"
         },
         {
             "name": "symfony/messenger",
