@@ -172,7 +172,7 @@ class Meeting {
     /**
      * Get datetime.
      *
-     * @return datetime.
+     * @return DateTime
      */
     public function getDateTime()
     {

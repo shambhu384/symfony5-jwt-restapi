@@ -22,6 +22,10 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 /**
  * Meeting Controller
@@ -33,11 +37,20 @@ class MeetingController extends Controller {
 
     /**
      * Create Meeting.
-     * @FOSRest\Post("/meeting")
-     *
+	 * @FOSRest\Post("/meeting")
+	 * @SWG\Response(
+	 *     response=200,
+	 *     description="Json hashmap with all user meta data",
+	 *     @SWG\Schema(
+	 *        type="object",
+	 *        example={"foo": "bar", "hello": "world"}
+	 *     )
+	 *
+	 *)
      * @return array
      */
-    public function postMeetingAction(Request $request, EventDispatcherInterface $dispatcher, ValidatorInterface $validator)
+    public function postMeetingAction(Request $request, EventDispatcherInterface $dispatcher,
+        ValidatorInterface $validator, AdapterInterface $cache, MessageBusInterface $bus)
     {
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
@@ -81,17 +94,24 @@ class MeetingController extends Controller {
      *
      * @return array
      */
-    public function getMeetingsAction(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher)
+    public function getMeetingsAction(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher,AdapterInterface $cache)
     {
+
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
+        $cacheKey = 'meetings';
+        $cachedItem = $this->get('cache.app')->getItem($cacheKey);
+        if(false === $cachedItem->isHit()) {
+            $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
+            $cachedItem->set($cacheKey, $meetings);
+            $cache->save($cachedItem);
+        }
 
-        $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
         // Move this in Meeting normalizer
         $response = array();
-        foreach($meetings as $meeting) {
+        foreach($cachedItem as $meeting) {
             // find users
             $users = [];
             foreach($meeting->getUsers() as $user) {

@@ -8,6 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use App\Entity\Article;
 use Doctrine\ORM\Mapping\OneToMany;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+
 
 /**
  * @ORM\Entity
@@ -24,6 +27,7 @@ class User extends BaseUser
 
     /**
      * @ORM\Column(type="string", length=100)
+     * @SWG\Property(type="string", maxLength=255)
      */
     protected $fullname;
 
@@ -67,7 +71,7 @@ class User extends BaseUser
     /**
      * Get fullName.
      *
-     * @return fullName.
+     * @return string
      */
     public function getFullName()
     {

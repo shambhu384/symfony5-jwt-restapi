@@ -18,19 +18,20 @@ framework:
     templating:
         engines: ['twig', 'php']
     cache:
-        # Put the unique name of your app here: the prefix seed
-        # is used to compute stable namespaces for cache keys.
-        #prefix_seed: your_vendor_name/app_name
+        app: cache.adapter.redis
+        directory: '%kernel.cache_dir%/pools'
+    #        default_doctrine_provider: ~
+    #    default_psr6_provider: ~
+        default_redis_provider: 'redis://localhost'
+        default_memcached_provider: 'memcached://localhost'
+        pools:
+            meeting:
+                adapter: cache.app
+                public: false
+                default_lifetime: 0
+                provider: ~
+                clearer: ~
 
-        # The app cache caches to the filesystem by default.
-        # Other options include:
-
-        # Redis
-        #app: cache.adapter.redis
-        #default_redis_provider: redis://localhost
-
-        # APCu (not recommended with heavy random-write workloads as memory fragmentation can cause perf issues)
-        #app: cache.adapter.apcu
 fos_user:
     db_driver: orm # other valid values are 'mongodb', 'couchdb' and 'propel'
     firewall_name: main
