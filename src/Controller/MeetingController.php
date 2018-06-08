@@ -1,5 +1,8 @@
 <?php
 
+
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -87,7 +90,7 @@ class MeetingController extends Controller {
      * Lists all Meetings.
      * @FOSRest\Get("/meeting")
      *
-     * @RequestParam(name="search", requirements="[a-z]+", description="search")
+     * @QueryParam(name="search", requirements="[a-z]+", description="search", allowBlank=false)
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")

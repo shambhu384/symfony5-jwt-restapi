@@ -1,6 +1,8 @@
 <?php
 
 
+declare(strict_types=1);
+
 namespace App\Serializer\Normalizer;
 
 use FOS\RestBundle\Serializer\Normalizer\ExceptionHandler as BaseExceptionHandler;
