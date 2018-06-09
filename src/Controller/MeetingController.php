@@ -29,6 +29,7 @@ use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
  * Meeting Controller
@@ -53,7 +54,7 @@ class MeetingController extends Controller {
      * @return array
      */
     public function postMeetingAction(Request $request, EventDispatcherInterface $dispatcher,
-        ValidatorInterface $validator, AdapterInterface $cache, MessageBusInterface $bus)
+        ValidatorInterface $validator, AdapterInterface $cache, MessageBusInterface $bus, UrlGeneratorInterface $router)
     {
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
@@ -81,7 +82,11 @@ class MeetingController extends Controller {
             'id' => $meeting->getId(),
             'name' => $meeting->getName(),
             'description' => $meeting->getDescription(),
-            'date' => $meeting->getDateTime()
+            'date' => $meeting->getDateTime(),
+            'url' => $router->generate(
+                'blog',
+                array('slug' => 'my-blog-post')
+            )
         );
         return View::create($response, Response::HTTP_CREATED , []);
     }
