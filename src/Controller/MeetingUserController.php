@@ -18,7 +18,7 @@ class MeetingUserController extends Controller
     /**
      * @FOSRest\Post("/api/v1/meeting/user")
      */
-    public function postUserAction(Request $request)
+    public function postUserAction(Request $request, \Swift_Mailer $mailer)
     {
         $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
@@ -49,6 +49,21 @@ class MeetingUserController extends Controller
             'email' => $user->getEmail(),
             'created_at' => $user->getCreated()
         );
+
+		$message = (new \Swift_Message('Hello Email'))
+        ->setFrom('send@example.com')
+        ->setTo('recipient@example.com')
+        ->setBody(
+            $this->renderView(
+                // templates/emails/registration.html.twig
+                'emails/registration.html.twig',
+                array('name' => $name)
+            ),
+            'text/html'
+        );
+
+        $mailer->send($message);
+
         return View::create($response, Response::HTTP_CREATED , []);
     }
 }
