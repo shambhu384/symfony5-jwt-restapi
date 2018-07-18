@@ -34,7 +34,7 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 class MeetingTagController extends Controller
 {
     /**
-     * @Route("/tag", name="meeting_tag")
+     * @Route("/tags", name="meeting_tag")
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      */
     public function index(ParamFetcherInterface $paramFetcher)

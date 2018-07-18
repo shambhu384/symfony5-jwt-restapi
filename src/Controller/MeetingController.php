@@ -37,11 +37,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * @Route("/api/v1")
  */
 
-class MeetingController extends Controller {
+class MeetingController extends Controller
+{
 
     /**
      * Create Meeting.
-	 * @FOSRest\Post("/meeting")
+	 * @FOSRest\Post("/meetings")
 	 * @SWG\Response(
 	 *     response=200,
 	 *     description="Json hashmap with all user meta data",
@@ -53,8 +54,8 @@ class MeetingController extends Controller {
 	 *)
      * @return array
      */
-    public function postMeetingAction(Request $request, EventDispatcherInterface $dispatcher,
-        ValidatorInterface $validator, AdapterInterface $cache, MessageBusInterface $bus, UrlGeneratorInterface $router)
+    public function postMeeting(Request $request, EventDispatcherInterface $dispatcher,
+        ValidatorInterface $validator, AdapterInterface $cache, UrlGeneratorInterface $router): View
     {
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
@@ -65,7 +66,6 @@ class MeetingController extends Controller {
         $errors = $validator->validate($meeting);
 
         if (count($errors) > 0) {
-
             return View::create(array('errors' => $errors), Response::HTTP_BAD_REQUEST);
         }
 
@@ -93,7 +93,7 @@ class MeetingController extends Controller {
 
     /**
      * Lists all Meetings.
-     * @FOSRest\Get("/meeting")
+     * @FOSRest\Get("/meetings")
      *
      * @QueryParam(name="search", requirements="[a-z]+", description="search", allowBlank=false)
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
@@ -102,7 +102,7 @@ class MeetingController extends Controller {
      *
      * @return array
      */
-    public function getMeetingsAction(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher,AdapterInterface $cache)
+    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher,AdapterInterface $cache): View
     {
 
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
@@ -146,11 +146,11 @@ class MeetingController extends Controller {
 
     /**
      * Get Meeting.
-     * @FOSRest\Get(path = "/meeting/{id}")
+     * @FOSRest\Get(path = "/meetings/{id}")
      *
      * @return array
      */
-    public function getMeetingAction($id)
+    public function getMeeting($id): View
     {
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
 
@@ -191,11 +191,12 @@ class MeetingController extends Controller {
 
     /**
      * Update an Meeting.
-     * @FOSRest\Put(path = "/meeting/{id}")
+     * @FOSRest\Put(path = "/meetings/{id}")
      *
      * @return array
      */
-    public function putMeetingAction($id, Request $request) {
+    public function putMeeting($id, Request $request): View
+    {
         $em = $this->getDoctrine()->getManager();
         $meeting = $em->getRepository(Meeting::class)->find($id);
         if(!$meeting) {
@@ -213,11 +214,11 @@ class MeetingController extends Controller {
     /**
      * Delete an Meeting.
      *
-     * @FOSRest\Delete(path = "/meeting")
+     * @FOSRest\Delete(path = "/meetings")
      *
      * @return array
      */
-    public function deleteAction(Request $request)
+    public function deleteMeeting(Request $request): View
     {
         $em = $this->getDoctrine()->getManager();
 

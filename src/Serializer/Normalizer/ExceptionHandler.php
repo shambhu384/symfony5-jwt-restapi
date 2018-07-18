@@ -28,6 +28,7 @@ class ExceptionHandler extends BaseExceptionHandler
                 $data['code'] = $statusCode = $templateData['status_code'];
             }
         }
+        //$data['debug'] = (string) $exception;
         $data['message'] = $this->getExceptionMessage($exception, isset($statusCode) ? $statusCode : null);
 
         return $data;

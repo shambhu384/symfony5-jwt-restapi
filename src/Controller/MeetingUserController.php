@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
@@ -13,10 +12,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
+/**
+ * @Route("/api/v1")
+ *
+ */
 class MeetingUserController extends Controller
 {
     /**
-     * @FOSRest\Post("/api/v1/meeting/user")
+     * @FOSRest\Post("/user")
      */
     public function postUserAction(Request $request, \Swift_Mailer $mailer)
     {
@@ -43,7 +46,7 @@ class MeetingUserController extends Controller
         $userManager->updateUser($user);
 
         // Add UserNormalizer to return normalize entity
-        $response  =array(
+        $response  = array(
             'id' => $user->getId(),
             'fullname' => $user->getFullName(),
             'email' => $user->getEmail(),
@@ -57,7 +60,7 @@ class MeetingUserController extends Controller
             $this->renderView(
                 // templates/emails/registration.html.twig
                 'emails/registration.html.twig',
-                array('name' => $name)
+                array('name' => $user->getFullName())
             ),
             'text/html'
         );

@@ -27,11 +27,11 @@ class MeetingRegistrationController extends Controller
 {
 	/**
      * Register
-     * @FOSRest\Post("/meeting/registration")
+     * @FOSRest\Post("/meetings/registration")
      *
      * @return array
      */
-    public function registerUserMeetingAction(Request $request)
+    public function registerUserMeeting(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $userManager = $this->get('fos_user.user_manager');
@@ -57,11 +57,11 @@ class MeetingRegistrationController extends Controller
 
     /**
      * Register
-     * @FOSRest\DELETE("/meeting/registration")
+     * @FOSRest\DELETE("/meetings/unregistration")
      *
      * @return array
      */
-    public function unregisterUserMeetingAction(Request $request)
+    public function unregisterUserMeeting(Request $request)
     {
         $em = $this->getDoctrine()->getManager();
         $userManager = $this->get('fos_user.user_manager');

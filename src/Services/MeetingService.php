@@ -45,7 +45,6 @@ class MeetingService implements MeetingInterface
     {
         $this->em = $entityManager;
         $this->meetingRepository = $repository;
-            
         //$this->user = $entityManager->getRepository(User::class)->findOneBy(['username' => $tokenStorage->getToken()->getUser()->getUsername()]);
     }
 
