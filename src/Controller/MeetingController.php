@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -71,7 +70,14 @@ class MeetingController extends Controller
 
         $em = $this->getDoctrine()->getManager();
         $user = $em->getRepository(User::class)->find($postdata->userid);
+        if (is_null($user)) {
+            return View::create(array(
+                'errors' => [['property_path' => 'userid', 'message' => 'User not exists']]
+            ), Response::HTTP_BAD_REQUEST);
+        }
+
         $meeting->setUser($user);
+
         $em->persist($meeting);
         $em->flush();
 
@@ -84,8 +90,8 @@ class MeetingController extends Controller
             'description' => $meeting->getDescription(),
             'date' => $meeting->getDateTime(),
             'url' => $router->generate(
-                'blog',
-                array('slug' => 'my-blog-post')
+                'meeting_index',
+                array('id' => $meeting->getId())
             )
         );
         return View::create($response, Response::HTTP_CREATED , []);
@@ -109,17 +115,11 @@ class MeetingController extends Controller
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
-        $cacheKey = 'meetings';
-        $cachedItem = $this->get('cache.app')->getItem($cacheKey);
-        if(false === $cachedItem->isHit()) {
-            $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
-            $cachedItem->set($cacheKey, $meetings);
-            $cache->save($cachedItem);
-        }
+        $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
 
         // Move this in Meeting normalizer
         $response = array();
-        foreach($cachedItem as $meeting) {
+        foreach($meetings as $meeting) {
             // find users
             $users = [];
             foreach($meeting->getUsers() as $user) {
@@ -139,14 +139,14 @@ class MeetingController extends Controller
             );
         }
         return View::create(array(
-            "metadata" => array("limit" => $limit, "start"=> $page),
+            "metadata" => array("limit" => (int) $limit, "start"=> $page),
             'collections' => $response
         ), Response::HTTP_OK , []);
     }
 
     /**
      * Get Meeting.
-     * @FOSRest\Get(path = "/meetings/{id}")
+     * @FOSRest\Get(path = "/meetings/{id}", name="meeting_index")
      *
      * @return array
      */

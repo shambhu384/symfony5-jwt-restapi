@@ -31,15 +31,15 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         user_create:
-            pattern:  ^/api/v1/meeting/user
+            pattern:  ^/api/v1/meetings/user
             methods: [POST]
             anonymous: true
             stateless: true
             provider: fos_userbundle
 
         api:
-            pattern:   ^/api/v1/meeting
-            methods: [POST, PATCH, DELETE]
+            pattern:   ^/api/v1/meetings
+            methods: [POST, PUT, DELETE]
             stateless: true
             anonymous: false
             provider: fos_userbundle
@@ -69,7 +69,7 @@ security:
         # - { path: ^/profile, roles: ROLE_USER }
         - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api/login_check, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/meeting, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
+        - { path: ^/api/v1/meetings/user, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/v1/meetings, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
         - { path: ^/api/v1/tag, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/meeting/user, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/api/v1/meeting/registration, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
+        - { path: ^/api/v1/meetings/registration, roles: [IS_AUTHENTICATED_FULLY, ROLE_API, ROLE_ADMIN] }
