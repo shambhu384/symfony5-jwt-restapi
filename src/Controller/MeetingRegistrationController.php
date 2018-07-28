@@ -29,9 +29,9 @@ class MeetingRegistrationController extends Controller
      * Register
      * @FOSRest\Post("/meetings/registration")
      *
-     * @return array
+     * @return View
      */
-    public function registerUserMeeting(Request $request)
+    public function registerUserMeeting(Request $request): View
     {
         $em = $this->getDoctrine()->getManager();
         $userManager = $this->get('fos_user.user_manager');
@@ -59,7 +59,7 @@ class MeetingRegistrationController extends Controller
      * Register
      * @FOSRest\DELETE("/meetings/unregistration")
      *
-     * @return array
+     * @return View
      */
     public function unregisterUserMeeting(Request $request)
     {

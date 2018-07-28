@@ -76,7 +76,7 @@ class User extends BaseUser
      *
      * @return string
      */
-    public function getFullName()
+    public function getFullName(): string
     {
         return $this->fullname;
     }
@@ -84,9 +84,9 @@ class User extends BaseUser
     /**
      * Set fullName.
      *
-     * @param fullName the value to set.
+     * @param string $fullname
      */
-    public function setFullName($fullname)
+    public function setFullName(string $fullname)
     {
 		$this->fullname = $fullname;
 	}
@@ -137,6 +137,12 @@ class User extends BaseUser
         return $this;
     }
 
+    /**
+     * Remove user device
+     *
+     * @param UserDevice $userDevice
+     * @return self
+     */
     public function removeUserDevice(UserDevice $userDevice): self
     {
         if ($this->userDevices->contains($userDevice)) {

@@ -30,7 +30,7 @@ class UserDeviceRemovedEvent extends Event
     /**
      * Set meeting.
      *
-     * @param meeting the value to set.
+     * @param Meeting $meeting
      */
     public function setMeeting(Meeting $meeting)
     {

@@ -21,7 +21,7 @@ class UserNormalizer implements NormalizerInterface
             'id'     => $object->getId(),
             'name'   => $object->getName(),
             'groups' => array_map(
-                function (Group $group) {
+                function (User $group) {
                     return $group->getId();
                 },
                 $object->getGroups()

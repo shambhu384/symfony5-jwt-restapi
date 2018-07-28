@@ -51,7 +51,7 @@ class MeetingController extends Controller
 	 *     )
 	 *
 	 *)
-     * @return array
+     * @return View
      */
     public function postMeeting(Request $request, EventDispatcherInterface $dispatcher,
         ValidatorInterface $validator, AdapterInterface $cache, UrlGeneratorInterface $router): View
@@ -106,7 +106,7 @@ class MeetingController extends Controller
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
      *
-     * @return array
+     * @return View
      */
     public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher,AdapterInterface $cache): View
     {
@@ -148,7 +148,7 @@ class MeetingController extends Controller
      * Get Meeting.
      * @FOSRest\Get(path = "/meetings/{id}", name="meeting_index")
      *
-     * @return array
+     * @return View
      */
     public function getMeeting($id): View
     {
@@ -193,7 +193,7 @@ class MeetingController extends Controller
      * Update an Meeting.
      * @FOSRest\Put(path = "/meetings/{id}")
      *
-     * @return array
+     * @return View
      */
     public function putMeeting($id, Request $request): View
     {
@@ -216,7 +216,7 @@ class MeetingController extends Controller
      *
      * @FOSRest\Delete(path = "/meetings")
      *
-     * @return array
+     * @return View
      */
     public function deleteMeeting(Request $request): View
     {

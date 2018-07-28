@@ -11,7 +11,7 @@ class RuleManager
     private $rules = [];
 
     /**
-     * @param Rule $rule
+     * @param RuleInterface $rule
      */
     public function addRule(RuleInterface $rule)
     {

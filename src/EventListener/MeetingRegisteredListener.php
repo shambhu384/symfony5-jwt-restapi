@@ -10,7 +10,7 @@ use Symfony\Component\EventDispatcher\Event;
 class MeetingRegisteredListener {
 
     /**
-     * @param MeetingRegisteredEvent|Event $event
+     * @param Event $event
      * @return void
      */
     public function onMeetingRegistered(Event $event): void

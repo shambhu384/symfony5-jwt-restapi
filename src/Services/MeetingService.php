@@ -18,7 +18,6 @@ use App\Entity\Meeting;
  */
 class MeetingService implements MeetingInterface
 {
-
     /**
      * @var EntityManagerInterface
      */
@@ -30,7 +29,7 @@ class MeetingService implements MeetingInterface
     private $meetingRepository;
 
     /**
-     * @var User|null|object
+     * @var User|null
      */
     private $user;
 
@@ -38,14 +37,14 @@ class MeetingService implements MeetingInterface
      * MeetingService constructor
      *
      * @param EntityManagerInterface $entityManager
-     * @param MeetingService $repository
+     * @param MeetingRepository $repository
      * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(EntityManagerInterface $entityManager, MeetingRepository $repository, TokenStorageInterface $tokenStorage)
     {
         $this->em = $entityManager;
         $this->meetingRepository = $repository;
-        //$this->user = $entityManager->getRepository(User::class)->findOneBy(['username' => $tokenStorage->getToken()->getUser()->getUsername()]);
+        $this->user = $entityManager->getRepository(User::class)->findOneBy(['username' => $tokenStorage->getToken()->getUser()->getUsername()]);
     }
 
     /**
@@ -81,7 +80,7 @@ class MeetingService implements MeetingInterface
     }
 
     /**
-     * @param array
+     * @param int $id
      */
     public function deleteMeeting(int $id): bool
     {

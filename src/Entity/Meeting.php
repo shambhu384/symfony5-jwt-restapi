@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
 
 /**
  * @ORM\Entity
@@ -19,9 +20,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Meeting {
 
-	/**
-	 * @ORM\Column(type="integer")
-	 * @ORM\Id
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     public $id;
@@ -44,11 +45,11 @@ class Meeting {
      */
     private $datetime;
 
-	/**
-	 * @var \Doctrine\Common\Collections\Collection|User[]
-	 *
-	 * @ORM\ManyToMany(targetEntity="User", mappedBy="meetings")
-	 */
+    /**
+     * @var \Doctrine\Common\Collections\Collection|User[]
+     *
+     * @ORM\ManyToMany(targetEntity="User", mappedBy="meetings")
+     */
     protected $users;
 
     /**
@@ -61,123 +62,124 @@ class Meeting {
      */
     public function __construct()
     {
-		$this->users = new ArrayCollection();
+        $this->users = new ArrayCollection();
         $this->tags = new ArrayCollection();
     }
 
 
-	/**
+    /**
      * Get id.
      *
-	 * @return id.
-	 */
-	public function getId()
-	{
-		return $this->id;
-	}
-
-	/**
-	 * Set id.
-	 *
-	 * @param id the value to set.
-	 */
-	public function setId($id)
-	{
-		$this->id = $id;
-	}
-
-	/**
-	 * Get name.
-	 *
-	 * @return name.
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	/**
-	 * Set name.
-	 *
-	 * @param name the value to set.
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
-
-	/**
-	 * Get description.
-	 *
-	 * @return description.
-	 */
-	public function getDescription()
-	{
-		return $this->description;
-	}
-
-	/**
-	 * Set description.
-	 *
-	 * @param description the value to set.
-	 */
-	public function setDescription($description)
-	{
-		$this->description = $description;
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
     }
 
-	/**
-	 * @param User $user
-	 */
-	public function setUser(User $user)
-	{
-		if ($this->users->contains($user)) {
-			return;
-		}
-		$this->users->add($user);
-		$user->setMeeting($this);
-	}
-	/**
-	 * @param User $user
-	 */
-	public function removeUser(User $user)
-	{
-		if (!$this->users->contains($user)) {
-			return;
-		}
-		$this->users->removeElement($user);
-		$user->removeMeeting($this);
-	}
+    /**
+     * Set id.
+     *
+     * @param int $id
+     */
+    public function setId($id): int
+    {
+        $this->id = $id;
+    }
 
-	/**
-	 * @param User $user
-	 */
-	public function setTag(Tag $tag)
-	{
-		if ($this->tags->contains($tag)) {
-			return;
-		}
-		$this->tags->add($tag);
-		$tag->setMeeting($this);
-	}
-	/**
-	 * @param User $user
-	 */
-	public function removeTag(Tag $tag)
-	{
-		if (!$this->tags->contains($tag)) {
-			return;
-		}
-		$this->tags->removeElement($tag);
-		$tag->removeMeeting($this);
-	}
+    /**
+     * Get name.
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set name.
+     *
+     * @param string $name
+     */
+    public function setName($name): string
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * Get description.
+     *
+     * @return string
+     */
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+
+    /**
+     * Set description.
+     *
+     * @param string $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser(User $user)
+    {
+        if ($this->users->contains($user)) {
+            return;
+        }
+        $this->users->add($user);
+        $user->setMeeting($this);
+    }
+
+    /**
+     * @param User $user
+     */
+    public function removeUser(User $user)
+    {
+        if (!$this->users->contains($user)) {
+            return;
+        }
+        $this->users->removeElement($user);
+        $user->removeMeeting($this);
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function setTag(Tag $tag)
+    {
+        if ($this->tags->contains($tag)) {
+            return;
+        }
+        $this->tags->add($tag);
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function removeTag(Tag $tag)
+    {
+        if (!$this->tags->contains($tag)) {
+            return;
+        }
+        $this->tags->removeElement($tag);
+        $tag->removeMeeting($this);
+    }
 
     /**
      * Get datetime.
      *
      * @return DateTime
      */
-    public function getDateTime()
+    public function getDateTime(): DateTime
     {
         return $this->datetime;
     }
@@ -185,7 +187,7 @@ class Meeting {
     /**
      * Set datetime.
      *
-     * @param datetime the value to set.
+     * @param DateTime $datetime
      */
     public function setDateTime($datetime)
     {
@@ -195,15 +197,15 @@ class Meeting {
     /**
      * Get users.
      *
-     * @return users.
+     * @return Collection
      */
-    public function getUsers()
+    public function getUsers(): Collection
     {
         return $this->users;
     }
 
     /**
-     * @return Collection|Tag[]
+     * @return Collection
      */
     public function getTags(): Collection
     {

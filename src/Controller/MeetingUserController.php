@@ -16,6 +16,7 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
+use FOS\UserBundle\Model\UserManagerInterface;
 
 /**
  * @Route("/api/v1")
@@ -26,9 +27,8 @@ class MeetingUserController extends Controller
     /**
      * @FOSRest\Post("/users")
      */
-    public function postUser(Request $request, \Swift_Mailer $mailer)
+    public function postUser(Request $request, \Swift_Mailer $mailer, UserManagerInterface $userManager)
     {
-        $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
         $user = $userManager->findUserByUsername($request->get('username'));
 
@@ -40,7 +40,7 @@ class MeetingUserController extends Controller
             throw new HttpException(400, 'username already exists.');
         }
 
-        $user = $userManager->createUser();
+        $user = new User;
         $user->setUsername($request->get('username'));
         $user->setFullName($request->get('fullname'));
         $user->setEmail($request->get('email'));
@@ -92,13 +92,15 @@ class MeetingUserController extends Controller
         $users = $repository->findAll(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
         // Move this in User normalizer
         $response = array();
-        foreach($users as $user) {
-            // find users
-            $response[] = array(
-                'id' => $user->getId(),
-                'name' => $user->getFullName(),
-                'email' => $user->getEmail()
-            );
+        if(count($users) > 0) {
+            foreach($users as $user) {
+                // find users
+                $response[] = array(
+                    'id' => $user->getId(),
+                    'name' => $user->getFullName(),
+                    'email' => $user->getEmail()
+                );
+            }
         }
 
         return View::create(array(

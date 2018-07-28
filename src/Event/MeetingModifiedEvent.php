@@ -20,9 +20,9 @@ class MeetingModifiedEvent extends Event
     /**
      * Get meeting.
      *
-     * @return meeting.
+     * @return Meeting
      */
-    public function getMeeting()
+    public function getMeeting(): Meeting
     {
         return $this->meeting;
     }
@@ -30,7 +30,7 @@ class MeetingModifiedEvent extends Event
     /**
      * Set meeting.
      *
-     * @param meeting the value to set.
+     * @param Meeting $meeting
      */
     public function setMeeting(Meeting $meeting)
     {

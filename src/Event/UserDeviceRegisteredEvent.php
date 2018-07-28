@@ -20,7 +20,7 @@ class UserDeviceRegisteredEvent extends Event
     /**
      * Get meeting.
      *
-     * @return meeting.
+     * @return Meeting
      */
     public function getMeeting()
     {
@@ -30,7 +30,7 @@ class UserDeviceRegisteredEvent extends Event
     /**
      * Set meeting.
      *
-     * @param meeting the value to set.
+     * @param Meeting $meeting
      */
     public function setMeeting(Meeting $meeting)
     {
