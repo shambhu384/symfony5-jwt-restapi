@@ -7,7 +7,8 @@ namespace App\EventListener;
 
 use Symfony\Component\EventDispatcher\Event;
 
-class MeetingRegisteredListener {
+class MeetingRegisteredListener
+{
 
     /**
      * @param Event $event

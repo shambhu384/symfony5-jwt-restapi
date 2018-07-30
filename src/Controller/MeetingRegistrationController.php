@@ -25,7 +25,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class MeetingRegistrationController extends Controller
 {
-	/**
+    /**
      * Register
      * @FOSRest\Post("/meetings/registration")
      *
@@ -37,12 +37,12 @@ class MeetingRegistrationController extends Controller
         $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
         $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
-        if(!$user) {
+        if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
 
         $meeting = $em->getRepository(Meeting::class)->find(array('id' => $request->get('meeting_id')));
-        if(!$meeting) {
+        if (!$meeting) {
             throw new HttpException(400, 'Meetingid invalid.');
         }
 
@@ -52,7 +52,7 @@ class MeetingRegistrationController extends Controller
         $em->persist($user);
         $em->persist($meeting);
         $em->flush();
-        return View::create('', Response::HTTP_NO_CONTENT , []);
+        return View::create('', Response::HTTP_NO_CONTENT, []);
     }
 
     /**
@@ -67,12 +67,12 @@ class MeetingRegistrationController extends Controller
         $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
         $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
-        if(!$user) {
+        if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
 
         $meeting = $em->getRepository(Meeting::class)->find(array('id' => $request->get('meeting_id')));
-        if(!$meeting) {
+        if (!$meeting) {
             throw new HttpException(400, 'Meetingid invalid.');
         }
 
@@ -81,6 +81,6 @@ class MeetingRegistrationController extends Controller
         $em->remove($meeting);
         $em->remove($user);
         $em->flush();
-        return View::create('', Response::HTTP_NO_CONTENT , []);
+        return View::create('', Response::HTTP_NO_CONTENT, []);
     }
 }

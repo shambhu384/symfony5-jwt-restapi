@@ -18,7 +18,8 @@ use DateTime;
  * @ORM\Entity
  * @ORM\Table(name="meeting")
  */
-class Meeting {
+class Meeting
+{
 
     /**
      * @ORM\Column(type="integer")
@@ -221,5 +222,4 @@ class Meeting {
 
         return $this;
     }
-
 }

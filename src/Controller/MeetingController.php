@@ -41,21 +41,25 @@ class MeetingController extends Controller
 
     /**
      * Create Meeting.
-	 * @FOSRest\Post("/meetings")
-	 * @SWG\Response(
-	 *     response=200,
-	 *     description="Json hashmap with all user meta data",
-	 *     @SWG\Schema(
-	 *        type="object",
-	 *        example={"foo": "bar", "hello": "world"}
-	 *     )
-	 *
-	 *)
+     * @FOSRest\Post("/meetings")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Json hashmap with all user meta data",
+     *     @SWG\Schema(
+     *        type="object",
+     *        example={"foo": "bar", "hello": "world"}
+     *     )
+     *
+     *)
      * @return View
      */
-    public function postMeeting(Request $request, EventDispatcherInterface $dispatcher,
-        ValidatorInterface $validator, AdapterInterface $cache, UrlGeneratorInterface $router): View
-    {
+    public function postMeeting(
+        Request $request,
+        EventDispatcherInterface $dispatcher,
+        ValidatorInterface $validator,
+        AdapterInterface $cache,
+        UrlGeneratorInterface $router
+    ): View {
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
         $meeting->setName($postdata->name);
@@ -94,7 +98,7 @@ class MeetingController extends Controller
                 array('id' => $meeting->getId())
             )
         );
-        return View::create($response, Response::HTTP_CREATED , []);
+        return View::create($response, Response::HTTP_CREATED, []);
     }
 
     /**
@@ -108,9 +112,8 @@ class MeetingController extends Controller
      *
      * @return View
      */
-    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher,AdapterInterface $cache): View
+    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache): View
     {
-
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
@@ -119,10 +122,10 @@ class MeetingController extends Controller
 
         // Move this in Meeting normalizer
         $response = array();
-        foreach($meetings as $meeting) {
+        foreach ($meetings as $meeting) {
             // find users
             $users = [];
-            foreach($meeting->getUsers() as $user) {
+            foreach ($meeting->getUsers() as $user) {
                 $users[] = array(
                     'id' => $user->getId(),
                     'fullname' => $user->getFullName(),
@@ -141,7 +144,7 @@ class MeetingController extends Controller
         return View::create(array(
             "metadata" => array("limit" => (int) $limit, "start"=> $page),
             'collections' => $response
-        ), Response::HTTP_OK , []);
+        ), Response::HTTP_OK, []);
     }
 
     /**
@@ -156,7 +159,7 @@ class MeetingController extends Controller
 
         // query for a single Product by its primary key (usually "id")
         $meeting = $repository->find($id);
-        if(!$meeting) {
+        if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
         // Move this in Meeting normalizer
@@ -169,8 +172,8 @@ class MeetingController extends Controller
             'tags' => []
         );
         $users = $meeting->getUsers();
-        if($users) {
-            foreach($users as $user) {
+        if ($users) {
+            foreach ($users as $user) {
                 $response['users'][] = array(
                     'id' => $user->getId(),
                     'fullname' => $user->getFullName(),
@@ -180,13 +183,13 @@ class MeetingController extends Controller
         }
 
         $tags = $meeting->getTags();
-        if($tags) {
-            foreach($tags as $tag) {
+        if ($tags) {
+            foreach ($tags as $tag) {
                 $response['tags'][] = $tag->getName();
             }
         }
 
-        return View::create($response, Response::HTTP_OK , []);
+        return View::create($response, Response::HTTP_OK, []);
     }
 
     /**
@@ -199,7 +202,7 @@ class MeetingController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $meeting = $em->getRepository(Meeting::class)->find($id);
-        if(!$meeting) {
+        if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
         $postdata = json_decode($request->getContent());
@@ -208,7 +211,7 @@ class MeetingController extends Controller
         $meeting->setDateTime(new \DateTime($postdata->date));
         $em->persist($meeting);
         $em->flush();
-        return View::create($meeting, Response::HTTP_OK , []);
+        return View::create($meeting, Response::HTTP_OK, []);
     }
 
     /**
@@ -223,12 +226,11 @@ class MeetingController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $meeting = $em->getRepository(Meeting::class)->find($request->get('meeting_id'));
-        if(!$meeting) {
+        if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
         $em->remove($meeting);
         $em->flush();
         return View::create(null, Response::HTTP_NO_CONTENT);
     }
-
 }

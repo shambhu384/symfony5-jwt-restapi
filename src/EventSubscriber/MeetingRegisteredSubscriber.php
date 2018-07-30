@@ -14,7 +14,8 @@ class MeetingRegisteredSubscriber implements EventSubscriberInterface
 {
     use LoggerAwareTrait;
 
-    public function __construct(LoggerInterface $logger) {
+    public function __construct(LoggerInterface $logger)
+    {
         $this->setLogger($logger);
     }
 
@@ -45,4 +46,3 @@ class MeetingRegisteredSubscriber implements EventSubscriberInterface
         $this->logger->info(sprintf('Notify users about new : %s', $event->getMeeting()->getName()));
     }
 }
-

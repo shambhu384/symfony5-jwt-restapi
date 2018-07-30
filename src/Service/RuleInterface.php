@@ -8,4 +8,3 @@ interface RuleInterface
 {
     public function apply($value);
 }
-

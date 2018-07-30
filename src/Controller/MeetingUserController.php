@@ -32,10 +32,11 @@ class MeetingUserController extends Controller
         // Check user already exists
         $user = $userManager->findUserByUsername($request->get('username'));
 
-        if($user) {
+        if ($user) {
             // check duplicate email
-            if($user->getemail() == $request->get('email'))
+            if ($user->getemail() == $request->get('email')) {
                 throw new HttpException(400, 'email already exists.');
+            }
 
             throw new HttpException(400, 'username already exists.');
         }
@@ -71,7 +72,7 @@ class MeetingUserController extends Controller
 
         $mailer->send($message);
 
-        return View::create($response, Response::HTTP_CREATED , []);
+        return View::create($response, Response::HTTP_CREATED, []);
     }
 
     /**
@@ -82,9 +83,8 @@ class MeetingUserController extends Controller
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
      */
-    public function getUsers(ParamFetcherInterface $paramFetcher,AdapterInterface $cache): View
+    public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache): View
     {
-
         $repository = $this->getDoctrine()->getRepository(User::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
@@ -92,8 +92,8 @@ class MeetingUserController extends Controller
         $users = $repository->findAll(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
         // Move this in User normalizer
         $response = array();
-        if(count($users) > 0) {
-            foreach($users as $user) {
+        if (count($users) > 0) {
+            foreach ($users as $user) {
                 // find users
                 $response[] = array(
                     'id' => $user->getId(),
@@ -106,6 +106,6 @@ class MeetingUserController extends Controller
         return View::create(array(
             "metadata" => array("limit" => (int)$limit, "start"=> $page),
             'collections' => $response
-        ), Response::HTTP_OK , []);
+        ), Response::HTTP_OK, []);
     }
 }

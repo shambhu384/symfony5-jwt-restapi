@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-
 /**
  * @ORM\Entity
  * @ORM\Table(name="fos_user")
@@ -34,20 +33,20 @@ class User extends BaseUser
      */
     protected $fullname;
 
-	/**
-	 * @var \Doctrine\Common\Collections\Collection|Meeting[]
-	 *
-	 * @ORM\ManyToMany(targetEntity="Meeting", inversedBy="users")
-	 * @ORM\JoinTable(
-	 *  name="user_meeting",
-	 *  joinColumns={
-	 *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-	 *  },
-	 *  inverseJoinColumns={
-	 *      @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
-	 *  }
-	 * )
-	 */
+    /**
+     * @var \Doctrine\Common\Collections\Collection|Meeting[]
+     *
+     * @ORM\ManyToMany(targetEntity="Meeting", inversedBy="users")
+     * @ORM\JoinTable(
+     *  name="user_meeting",
+     *  joinColumns={
+     *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
+     *  },
+     *  inverseJoinColumns={
+     *      @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
+     *  }
+     * )
+     */
     protected $meetings;
 
     /**
@@ -88,36 +87,37 @@ class User extends BaseUser
      */
     public function setFullName(string $fullname)
     {
-		$this->fullname = $fullname;
-	}
+        $this->fullname = $fullname;
+    }
 
-    public function getCreated() {
+    public function getCreated()
+    {
         return $this->created;
     }
-	/**
-	 * @param Meeting $meeting
-	 */
-	public function setMeeting(Meeting $meeting)
-	{
-		// avoid duplicates
-		if ($this->meetings->contains($meeting)) {
-			return;
-		}
-		$this->meetings->add($meeting);
-		$meeting->setUser($this);
-	}
-	/**
-	 * @param Meeting $meeting
-	 */
-	public function removeMeeting(Meeting $meeting)
-	{
-		// avoid duplicates
-		if (!$this->meetings->contains($meeting)) {
-			return;
-		}
+    /**
+     * @param Meeting $meeting
+     */
+    public function setMeeting(Meeting $meeting)
+    {
+        // avoid duplicates
+        if ($this->meetings->contains($meeting)) {
+            return;
+        }
+        $this->meetings->add($meeting);
+        $meeting->setUser($this);
+    }
+    /**
+     * @param Meeting $meeting
+     */
+    public function removeMeeting(Meeting $meeting)
+    {
+        // avoid duplicates
+        if (!$this->meetings->contains($meeting)) {
+            return;
+        }
 
-		$this->meetings->removeElement($meeting);
-		$meeting->removeUser($this);
+        $this->meetings->removeElement($meeting);
+        $meeting->removeUser($this);
     }
 
     /**

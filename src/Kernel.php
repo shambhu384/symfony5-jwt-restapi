@@ -60,7 +60,8 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
     }
 
-    protected function build(ContainerBuilder $container): void {
+    protected function build(ContainerBuilder $container): void
+    {
         parent::build($container);
 
         $container->addCompilerPass(new RuleManagerCompilerPass());

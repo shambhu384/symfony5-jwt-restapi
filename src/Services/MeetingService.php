@@ -68,7 +68,6 @@ class MeetingService implements MeetingInterface
      */
     public function addMeeting(array $data): bool
     {
-
     }
 
     /**
@@ -76,7 +75,6 @@ class MeetingService implements MeetingInterface
      */
     public function updateMeeting(int $id, array $data): Meeting
     {
-
     }
 
     /**

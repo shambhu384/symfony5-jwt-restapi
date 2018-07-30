@@ -11,4 +11,3 @@ class GreaterThanRule implements RuleInterface
         return $value > 4000;
     }
 }
-

@@ -37,7 +37,6 @@ class UserDeviceController extends Controller
      */
     public function index(ParamFetcherInterface $paramFetcher)
     {
-        return View::create(['page' => $paramFetcher->get('page')], Response::HTTP_CREATED , []);
+        return View::create(['page' => $paramFetcher->get('page')], Response::HTTP_CREATED, []);
     }
 }
-

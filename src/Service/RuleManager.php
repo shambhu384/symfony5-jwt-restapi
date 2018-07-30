@@ -24,7 +24,7 @@ class RuleManager
             throw new \exception('Please add roles');
         }*/
         foreach ($this->rules as $rule) {
-            $data = array_filter($data, function($value) use ($rule) {
+            $data = array_filter($data, function ($value) use ($rule) {
                 return $rule->apply($value);
             });
         }

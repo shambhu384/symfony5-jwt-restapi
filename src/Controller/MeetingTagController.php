@@ -24,7 +24,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 
-
 /**
  * Meeting Controller
  *
@@ -39,6 +38,6 @@ class MeetingTagController extends Controller
      */
     public function index(ParamFetcherInterface $paramFetcher)
     {
-        return View::create(['page' => $paramFetcher->get('page')], Response::HTTP_CREATED , []);
+        return View::create(['page' => $paramFetcher->get('page')], Response::HTTP_CREATED, []);
     }
 }

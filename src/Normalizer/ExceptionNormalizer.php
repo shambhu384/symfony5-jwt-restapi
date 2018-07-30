@@ -9,7 +9,6 @@ use App\Entity\User;
 
 class ExceptionNormalizer implements NormalizerInterface
 {
-
     public function normalize($object, $format = null, array $context = array())
     {
         return [

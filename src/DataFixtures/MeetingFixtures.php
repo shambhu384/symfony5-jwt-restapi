@@ -7,7 +7,6 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use App\Entity\Meeting;
 
-
 class MeetingFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager)
@@ -21,7 +20,6 @@ class MeetingFixtures extends Fixture implements DependentFixtureInterface
         $manager->persist($meeting);
 
         $manager->flush();
-
     }
 
     public function getDependencies()
