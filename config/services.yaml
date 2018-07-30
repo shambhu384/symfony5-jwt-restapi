@@ -75,3 +75,30 @@ services:
     App\Services\MeetingService: ~
 
     App\Services\Interfaces\MeetingInterface: '@App\Services\MeetingService'
+
+    meeting_converter:
+		class: App\Request\ParamConverter\MeetingConverter
+        tags:
+            - { name: request.param_converter, priority: -2, converter: meeting_converter}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
