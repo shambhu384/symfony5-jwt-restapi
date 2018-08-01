@@ -7,7 +7,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,14 +22,15 @@ use App\Event\MeetingRegisteredEvent;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\Annotations\Version;
 
 /**
  * Meeting Controller
  *
- * @Route("/api/v1")
+ * @Version("v1")
  */
-
-class MeetingTagController extends Controller
+class MeetingTagController extends AbstractController
 {
     /**
      * @Route("/tags", name="meeting_tag")

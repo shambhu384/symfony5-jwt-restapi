@@ -40,11 +40,14 @@ class MeetingService implements MeetingInterface
      * @param MeetingRepository $repository
      * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(EntityManagerInterface $entityManager, MeetingRepository $repository, TokenStorageInterface $tokenStorage)
+    public function __construct(
+        EntityManagerInterface $entityManager, MeetingRepository $repository, TokenStorageInterface $tokenStorage)
     {
         $this->em = $entityManager;
         $this->meetingRepository = $repository;
-        $this->user = $entityManager->getRepository(User::class)->findOneBy(['username' => $tokenStorage->getToken()->getUser()->getUsername()]);
+///        $this->user = $entityManager->getRepository(User::class)->findOneBy([
+//            'username' => $tokenStorage->getToken()->getUser()->getUsername()
+//        ]);
     }
 
     /**

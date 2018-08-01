@@ -248,6 +248,15 @@
     "symfony/validator": {
         "version": "v4.0.7"
     },
+    "symfony/workflow": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "7c8798612bf94fbe4cb75056a4cd7ea3a9183698"
+        }
+    },
     "twig/twig": {
         "version": "v2.4.8"
     },

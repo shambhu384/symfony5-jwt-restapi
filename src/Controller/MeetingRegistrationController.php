@@ -7,7 +7,6 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -16,18 +15,21 @@ use FOS\RestBundle\Controller\Annotations as FOSRest;
 use App\Entity\Meeting;
 use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\Annotations\Version;
 
 /**
  * Meeting Controller
  *
- * @Route("/api/v1")
+ * @Route("/meetings")
+ * @Version("v1")
  */
 
-class MeetingRegistrationController extends Controller
+class MeetingRegistrationController extends AbstractController
 {
     /**
      * Register
-     * @FOSRest\Post("/meetings/registration")
+     * @FOSRest\Post("/registration")
      *
      * @return View
      */
@@ -57,7 +59,7 @@ class MeetingRegistrationController extends Controller
 
     /**
      * Register
-     * @FOSRest\DELETE("/meetings/unregistration")
+     * @FOSRest\DELETE("/unregistration")
      *
      * @return View
      */

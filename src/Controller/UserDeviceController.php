@@ -6,7 +6,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,17 +21,20 @@ use App\Event\MeetingRegisteredEvent;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Request\ParamFetcherInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\Annotations\Version;
 
 /**
- * Meeting Controller
+ * User devices
  *
- * @Route("/api/v1")
+ * @Route("/users")
+ * @Version("v1")
  */
 
-class UserDeviceController extends Controller
+class UserDeviceController extends AbstractController
 {
     /**
-     * @Route("/user/device", name="user_device")
+     * @Route("/devices", name="user_device")
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      */
     public function index(ParamFetcherInterface $paramFetcher)

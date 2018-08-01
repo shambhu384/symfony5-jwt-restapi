@@ -7,7 +7,6 @@ namespace App\Controller;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -29,14 +28,18 @@ use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Controller\Annotations\Version;
+use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Meeting Controller
  *
- * @Route("/api/v1")
+ * @Version("v1")
  */
 
-class MeetingController extends Controller
+class MeetingController extends FOSRestController
 {
 
     /**
@@ -112,7 +115,7 @@ class MeetingController extends Controller
      *
      * @return View
      */
-    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache): View
+    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache): JsonResponse
     {
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
@@ -141,7 +144,7 @@ class MeetingController extends Controller
                 'users' => $users
             );
         }
-        return View::create(array(
+        return new JsonResponse(array(
             "metadata" => array("limit" => (int) $limit, "start"=> $page),
             'collections' => $response
         ), Response::HTTP_OK, []);

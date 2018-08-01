@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,12 +16,15 @@ use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use FOS\RestBundle\Controller\Annotations\Version;
 
 /**
- * @Route("/api/v1")
+ * Meeting user
  *
+ * @Version("v1")
  */
-class MeetingUserController extends Controller
+class MeetingUserController extends AbstractController
 {
     /**
      * @FOSRest\Post("/users")

@@ -1,3 +1,5 @@
 controllers:
     resource: ../../src/Controller/
     type: annotation
+    name_prefix: api_
+    prefix: /api/{version}
