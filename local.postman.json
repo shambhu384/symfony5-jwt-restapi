@@ -11,7 +11,7 @@
 			"name": "Create user for Meeting",
 			"request": {
 				"url": {
-					"raw": "http://api.learningpage.in/api/v1/meeting/user",
+					"raw": "http://localhost:9100/api/v1/meeting/user",
 					"protocol": "http",
 					"host": [
 						"api",
@@ -93,7 +93,7 @@
 		{
 			"name": "Get access token for User",
 			"request": {
-				"url": "http://api.learningpage.in/api/login_check",
+				"url": "http://localhost:9100/api/login_check",
 				"method": "POST",
 				"header": [
 					{
@@ -127,7 +127,7 @@
 		{
 			"name": "Create a Meeting",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting",
+				"url": "http://localhost:9100/api/v1/meeting",
 				"method": "POST",
 				"header": [
 					{
@@ -152,7 +152,7 @@
 		{
 			"name": "Get all Meetings",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting",
+				"url": "http://localhost:9100/api/v1/meeting",
 				"method": "GET",
 				"header": [
 					{
@@ -169,7 +169,7 @@
 		{
 			"name": "Update Meeting",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting/1",
+				"url": "http://localhost:9100/api/v1/meeting/1",
 				"method": "PUT",
 				"header": [
 					{
@@ -189,7 +189,7 @@
 		{
 			"name": "Delete Meeting",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting",
+				"url": "http://localhost:9100/api/v1/meeting",
 				"method": "DELETE",
 				"header": [
 					{
@@ -221,7 +221,7 @@
 		{
 			"name": "Add user into Meeting",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting/registration",
+				"url": "http://localhost:9100/api/v1/meeting/registration",
 				"method": "POST",
 				"header": [
 					{
@@ -259,7 +259,7 @@
 		{
 			"name": "Remove user into Meeting",
 			"request": {
-				"url": "http://api.learningpage.in/api/v1/meeting/registration",
+				"url": "http://localhost:9100/api/v1/meeting/registration",
 				"method": "DELETE",
 				"header": [
 					{

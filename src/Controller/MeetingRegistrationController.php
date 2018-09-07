@@ -17,6 +17,7 @@ use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations\Version;
+use FOS\UserBundle\Model\UserManagerInterface;
 
 /**
  * Meeting Controller
@@ -33,10 +34,9 @@ class MeetingRegistrationController extends AbstractController
      *
      * @return View
      */
-    public function registerUserMeeting(Request $request): View
+    public function registerUserMeeting(Request $request, UserManagerInterface  $userManager): View
     {
         $em = $this->getDoctrine()->getManager();
-        $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
         $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
         if (!$user) {
@@ -63,10 +63,9 @@ class MeetingRegistrationController extends AbstractController
      *
      * @return View
      */
-    public function unregisterUserMeeting(Request $request)
+    public function unregisterUserMeeting(Request $request, UserManagerInterface $userManager): View
     {
         $em = $this->getDoctrine()->getManager();
-        $userManager = $this->get('fos_user.user_manager');
         // Check user already exists
         $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
         if (!$user) {
@@ -79,9 +78,9 @@ class MeetingRegistrationController extends AbstractController
         }
 
         $user->removeMeeting($meeting);
-        $meeting->removeUser($user);
+        //$meeting->removeUser($user);
         $em->remove($meeting);
-        $em->remove($user);
+        //$em->remove($user);
         $em->flush();
         return View::create('', Response::HTTP_NO_CONTENT, []);
     }

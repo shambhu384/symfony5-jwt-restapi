@@ -97,8 +97,8 @@ class MeetingController extends FOSRestController
             'description' => $meeting->getDescription(),
             'date' => $meeting->getDateTime(),
             'url' => $router->generate(
-                'meeting_index',
-                array('id' => $meeting->getId())
+                'api_meeting_index',
+                array('id' => $meeting->getId(), 'version' => 'v1')
             )
         );
         return View::create($response, Response::HTTP_CREATED, []);

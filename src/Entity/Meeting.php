@@ -103,7 +103,7 @@ class Meeting
      *
      * @param string $name
      */
-    public function setName($name): string
+    public function setName($name)
     {
         $this->name = $name;
     }
