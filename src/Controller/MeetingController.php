@@ -13,6 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use FOS\RestBundle\View\View;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
 use App\Entity\Meeting;
+use App\Message\MeetingMessage;
 use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -23,7 +24,6 @@ use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
 use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
-use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -32,6 +32,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\FOSRestController;
 use FOS\RestBundle\Controller\Annotations\Version;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use App\Request\ParamConverter\MeetingConverter;
 
 /**
  * Meeting Controller
@@ -44,32 +46,30 @@ class MeetingController extends FOSRestController
 
     /**
      * Create Meeting.
-     * @FOSRest\Post("/meetings")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Json hashmap with all user meta data",
-     *     @SWG\Schema(
-     *        type="object",
-     *        example={"foo": "bar", "hello": "world"}
-     *     )
      *
-     *)
+     * @FOSRest\Post("/meetings")
+     *
+     * @param Request $request
+     * @param EventDispatcherInterface $dispatcher
+     * @param ValidatorInterface $validator
+     * @param AdapterInterface $cache
+     * @param UrlGeneratorInterface $router
+     *
+     * @ParamConverter(converter="advert.post.paramconverter")
      * @return View
      */
     public function postMeeting(
+        Meeting $meeting,
         Request $request,
         EventDispatcherInterface $dispatcher,
         ValidatorInterface $validator,
         AdapterInterface $cache,
         UrlGeneratorInterface $router
     ): View {
-        $postdata = json_decode($request->getContent());
-        $meeting = new Meeting();
-        $meeting->setName($postdata->name);
-        $meeting->setDescription($postdata->description);
-        $meeting->setDateTime(new \DateTime($postdata->date));
 
-        $errors = $validator->validate($meeting);
+
+
+            $errors = $validator->validate($meeting);
 
         if (count($errors) > 0) {
             return View::create(array('errors' => $errors), Response::HTTP_BAD_REQUEST);
@@ -115,7 +115,7 @@ class MeetingController extends FOSRestController
      *
      * @return View
      */
-    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache): JsonResponse
+    public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache, MessageBusInterface $bus): JsonResponse
     {
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
@@ -144,9 +144,19 @@ class MeetingController extends FOSRestController
                 'users' => $users
             );
         }
+
+        // send notification
+        $bus->dispatch(new MeetingMessage());
+
         return new JsonResponse(array(
-            "metadata" => array("limit" => (int) $limit, "start"=> $page),
-            'collections' => $response
+            "_links" => array(
+                "next" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  + 1),
+                "prev" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  - 1),
+            ),
+            'limit' => $limit,
+            'results' => $response,
+            'size' => (int) $limit,
+            'start' => $page
         ), Response::HTTP_OK, []);
     }
 

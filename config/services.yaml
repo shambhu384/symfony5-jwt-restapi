@@ -82,23 +82,6 @@ services:
             - { name: request.param_converter, priority: -2, converter: meeting_converter }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    App\MessageHandler\:
+        resource: '../src/MessageHandler'
+        tags: ['messenger.message_handler']
