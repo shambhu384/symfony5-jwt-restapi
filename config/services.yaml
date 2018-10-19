@@ -1,6 +1,7 @@
 parameters:
     locale: 'en'
     api.version: 'v1'
+    meetings_directory: '%kernel.project_dir%/public/uploads/meetings'
 
 services:
     # default configuration for services in *this* file
