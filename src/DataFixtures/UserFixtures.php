@@ -21,7 +21,7 @@ class UserFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        $user = new User();
+        /*$user = new User();
         $user->setUsername('admin');
         $user->setEmail('shambhu384@gmail.com');
         $user->setFullname('Shambhu Kumar');
@@ -33,5 +33,6 @@ class UserFixtures extends Fixture
         $manager->flush();
         // other fixtures can get this object using the UserFixtures::ADMIN_USER_REFERENCE constant
         $this->addReference(self::USER_REFERENCE, $user);
+         */
     }
 }
