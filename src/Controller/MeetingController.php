@@ -34,7 +34,7 @@ use FOS\RestBundle\Controller\Annotations\Version;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Request\ParamConverter\MeetingConverter;
-
+use Symfony\Component\Validator\ConstraintViolationListInterface;
 /**
  * Meeting Controller
  *
@@ -55,36 +55,23 @@ class MeetingController extends FOSRestController
      * @param AdapterInterface $cache
      * @param UrlGeneratorInterface $router
      *
-     * @ParamConverter(converter="advert.post.paramconverter")
+     * @ParamConverter("meeting", converter="fos_rest.request_body")
      * @return View
      */
     public function postMeeting(
         Meeting $meeting,
         Request $request,
         EventDispatcherInterface $dispatcher,
-        ValidatorInterface $validator,
+        ConstraintViolationListInterface $validationErrors,
         AdapterInterface $cache,
         UrlGeneratorInterface $router
     ): View {
 
-
-
-            $errors = $validator->validate($meeting);
-
-        if (count($errors) > 0) {
-            return View::create(array('errors' => $errors), Response::HTTP_BAD_REQUEST);
+        if (count($validationErrors) > 0) {
+            return View::create(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
         }
 
         $em = $this->getDoctrine()->getManager();
-        $user = $em->getRepository(User::class)->find($postdata->userid);
-        if (is_null($user)) {
-            return View::create(array(
-                'errors' => [['property_path' => 'userid', 'message' => 'User not exists']]
-            ), Response::HTTP_BAD_REQUEST);
-        }
-
-        $meeting->setUser($user);
-
         $em->persist($meeting);
         $em->flush();
 
@@ -141,6 +128,7 @@ class MeetingController extends FOSRestController
                 'name' => $meeting->getName(),
                 'description' => $meeting->getDescription(),
                 'date' => $meeting->getDateTime(),
+                'organiser' => $meeting->getOrganiser(),
                 'users' => $users
             );
         }
