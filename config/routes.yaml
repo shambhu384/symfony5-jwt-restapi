@@ -15,3 +15,7 @@ fos_user_security_login:
 fos_user_security_logout:
     path:    /logout
     defaults:  { _controller: FOSUserBundle:Security:logout, _method: POST }
+
+gesdinet_jwt_refresh_token:
+    path:     /api/token/refresh
+    defaults: { _controller: gesdinet.jwtrefreshtoken:refresh }
