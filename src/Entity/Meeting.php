@@ -13,6 +13,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use DateTime;
+use Doctrine\ORM\Mapping\OneToOne;
 
 /**
  * @ORM\Entity
@@ -46,6 +47,7 @@ class Meeting
      */
     private $datetime;
 
+
     /**
      * @var \Doctrine\Common\Collections\Collection|User[]
      *
@@ -57,6 +59,13 @@ class Meeting
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="meetings")
      */
     private $tags;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @OneToOne(targetEntity="User")
+     * @JoinColumn(name="organiser_id", referencedColumnName="id")
+     */
+    private $organiser;
 
     /**
      * Constructor
@@ -93,7 +102,7 @@ class Meeting
      *
      * @return string
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
@@ -113,7 +122,7 @@ class Meeting
      *
      * @return string
      */
-    public function getDescription(): string
+    public function getDescription(): ?string
     {
         return $this->description;
     }
@@ -180,7 +189,7 @@ class Meeting
      *
      * @return DateTime
      */
-    public function getDateTime(): DateTime
+    public function getDateTime(): ?DateTime
     {
         return $this->datetime;
     }
@@ -219,6 +228,18 @@ class Meeting
             $this->tags[] = $tag;
             $tag->addMeeting($this);
         }
+
+        return $this;
+    }
+
+    public function getOrganiser(): ?int
+    {
+        return $this->organiser;
+    }
+
+    public function setOrganiser(int $organiser): self
+    {
+        $this->organiser = $organiser;
 
         return $this;
     }

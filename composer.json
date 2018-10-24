@@ -6,6 +6,7 @@
         "ext-iconv": "*",
         "friendsofsymfony/rest-bundle": "^2.3",
         "friendsofsymfony/user-bundle": "^2.1",
+        "gesdinet/jwt-refresh-token-bundle": "^0.5.3",
         "jms/serializer-bundle": "^2.3",
         "lexik/jwt-authentication-bundle": "^2.4",
         "nelmio/api-doc-bundle": "^3.2",

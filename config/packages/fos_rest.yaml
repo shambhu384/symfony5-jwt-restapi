@@ -11,6 +11,11 @@ fos_rest:
     body_listener:
         enabled: false
 
+    body_converter:
+        enabled: true
+        validate: true
+        validation_errors_argument: validationErrors # This is the default value
+
     exception:
         enabled: true
         codes:
