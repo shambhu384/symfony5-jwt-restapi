@@ -85,3 +85,16 @@ services:
     App\MessageHandler\:
         resource: '../src/MessageHandler'
         tags: ['messenger.message_handler']
+
+    # Service locator
+    my.event_writers:
+        class: Symfony\Component\DependencyInjection\ServiceLocator
+        arguments:
+            - memory: '@App\Infrastructure\InMemory'
+            - ampq: '@App\Infrastructure\RabbitMQ'
+        tags: ['controller.service_locator']
+
+    App\Infrastructure\InMemory: ~
+
+    App\Infrastructure\RabbitMQ: ~
+
