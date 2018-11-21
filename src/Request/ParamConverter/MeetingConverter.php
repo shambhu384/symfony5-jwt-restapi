@@ -14,7 +14,6 @@ class MeetingConverter implements ParamConverterInterface
     {
         die($request->attributes->get('name'));
         $request->attributes->set($name, $object);
-        
         $postdata = json_decode($request->getContent());
         $meeting = new Meeting();
         $meeting->setName($postdata->name);

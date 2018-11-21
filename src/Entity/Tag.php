@@ -32,6 +32,16 @@ class Tag
      */
     private $meetings;
 
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    protected $updatedAt;
+
     public function __construct()
     {
         $this->meetings = new ArrayCollection();
@@ -79,4 +89,69 @@ class Tag
 
         return $this;
     }
+
+    /**
+     * Pre persist event listener
+     *
+     * @ORM\PrePersist
+     */
+    public function beforeSave()
+    {
+        $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
+    }
+    /**
+     * Pre update event handler
+     *
+     * @ORM\PreUpdate
+     */
+    public function doPreUpdate()
+    {
+        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
+    }
+
+    /**
+     * Get created date/time
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+    /**
+     * @param \DateTime
+     *
+     * @return Account
+     */
+    public function setCreatedAt($created)
+    {
+        $this->createdAt = $created;
+        return $this;
+    }
+    /**
+     * Get last update date/time
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
+    }
+    /**
+     * @param \DateTime
+     *
+     * @return Account
+     */
+    public function setUpdatedAt($updated)
+    {
+        $this->updatedAt = $updated;
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return (string) $this->getName();
+    }
+
 }
