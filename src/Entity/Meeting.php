@@ -18,6 +18,7 @@ use Doctrine\ORM\Mapping\OneToOne;
 /**
  * @ORM\Entity
  * @ORM\Table(name="meeting")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Meeting
 {

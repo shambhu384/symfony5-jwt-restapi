@@ -18,6 +18,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations\Version;
 use FOS\UserBundle\Model\UserManagerInterface;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
+
 
 /**
  * Meeting Controller
@@ -31,6 +34,21 @@ class MeetingRegistrationController extends AbstractController
     /**
      * Register
      * @FOSRest\Post("/registration")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
      *
      * @return View
      */
@@ -61,6 +79,21 @@ class MeetingRegistrationController extends AbstractController
      * Register
      * @FOSRest\DELETE("/unregistration")
      *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
      * @return View
      */
     public function unregisterUserMeeting(Request $request, UserManagerInterface $userManager): View

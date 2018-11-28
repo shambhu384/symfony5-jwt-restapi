@@ -18,6 +18,8 @@ use Symfony\Component\Cache\Adapter\AdapterInterface;
 use FOS\UserBundle\Model\UserManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations\Version;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 /**
  * Meeting user
@@ -28,6 +30,22 @@ class MeetingUserController extends AbstractController
 {
     /**
      * @FOSRest\Post("/users")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Tags")
+     *
      */
     public function postUser(Request $request, \Swift_Mailer $mailer, UserManagerInterface $userManager)
     {

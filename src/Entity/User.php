@@ -16,6 +16,8 @@ use Swagger\Annotations as SWG;
 
 /**
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
+ *
  * @ORM\Table(name="fos_user")
  */
 class User extends BaseUser
@@ -158,65 +160,6 @@ class User extends BaseUser
                 $userDevice->setUserid(null);
             }
         }
-        return $this;
-    }
-
-    /**
-     * Pre persist event listener
-     *
-     * @ORM\PrePersist
-     */
-    public function beforeSave()
-    {
-        $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
-        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
-    }
-    /**
-     * Pre update event handler
-     *
-     * @ORM\PreUpdate
-     */
-    public function doPreUpdate()
-    {
-        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
-    }
-
-    /**
-     * Get created date/time
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-    /**
-     * @param \DateTime
-     *
-     * @return Account
-     */
-    public function setCreatedAt($created)
-    {
-        $this->createdAt = $created;
-        return $this;
-    }
-    /**
-     * Get last update date/time
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
-    }
-    /**
-     * @param \DateTime
-     *
-     * @return Account
-     */
-    public function setUpdatedAt($updated)
-    {
-        $this->updatedAt = $updated;
         return $this;
     }
 

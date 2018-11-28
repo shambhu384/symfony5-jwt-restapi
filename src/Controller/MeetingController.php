@@ -35,12 +35,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use App\Request\ParamConverter\MeetingConverter;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Swagger\Annotations as SWG;
+
+
 /**
  * Meeting Controller
  *
  * @Version("v1")
  */
-
 class MeetingController extends FOSRestController
 {
 
@@ -56,7 +58,21 @@ class MeetingController extends FOSRestController
      * @param UrlGeneratorInterface $router
      *
      * @ParamConverter("meeting", converter="fos_rest.request_body")
-     * @return View
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
      */
     public function postMeeting(
         Meeting $meeting,
@@ -100,6 +116,22 @@ class MeetingController extends FOSRestController
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
      *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
+     *
      * @return View
      */
     public function getMeetings(MeetingInterface $meetingService, ParamFetcherInterface $paramFetcher, AdapterInterface $cache, MessageBusInterface $bus): JsonResponse
@@ -134,7 +166,7 @@ class MeetingController extends FOSRestController
         }
 
         // send notification
-        $bus->dispatch(new MeetingMessage());
+        //$bus->dispatch(new MeetingMessage());
 
         return new JsonResponse(array(
             "_links" => array(
@@ -151,6 +183,22 @@ class MeetingController extends FOSRestController
     /**
      * Get Meeting.
      * @FOSRest\Get(path = "/meetings/{id}", name="meeting_index")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
+     *
      *
      * @return View
      */
@@ -197,6 +245,21 @@ class MeetingController extends FOSRestController
      * Update an Meeting.
      * @FOSRest\Put(path = "/meetings/{id}")
      *
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
      * @return View
      */
     public function putMeeting($id, Request $request): View
@@ -219,6 +282,21 @@ class MeetingController extends FOSRestController
      * Delete an Meeting.
      *
      * @FOSRest\Delete(path = "/meetings")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="Meetings")
      *
      * @return View
      */

@@ -70,11 +70,24 @@ class MeetingFixtures extends Fixture implements DependentFixtureInterface
             ]
         ];
 
+
+        // this reference returns the User object created in UserFixtures
+        $organiser = new User();
+        $organiser->setUsername('admin');
+        $organiser->setFullname('Organiser Team');
+        $organiser->setEmail('learning@demo.org');
+        $password = $this->encoder->encodePassword($organiser, 'pass_1234');
+        $organiser->setPassword($password);
+        $manager->persist($organiser);
+        $manager->flush();
+
+
         foreach($mettings as $item) {
             $meeting = new Meeting();
             $meeting->setName($item["title"]);
             $meeting->setDescription($item["desc"]);
             $meeting->setDateTime(new \DateTime('now'));
+            $meeting->setOrganiser($organiser->getId());
 
             $tag = new Tag();
             $tag->setName($item["tags"][0]);
