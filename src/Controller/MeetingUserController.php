@@ -44,7 +44,7 @@ class MeetingUserController extends AbstractController
      *     type="string",
      *     description="The field used to order Meetings"
      * )
-     * @SWG\Tag(name="Tags")
+     * @SWG\Tag(name="Tag")
      *
      */
     public function postUser(Request $request, \Swift_Mailer $mailer, UserManagerInterface $userManager)
@@ -102,6 +102,21 @@ class MeetingUserController extends AbstractController
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="User")
      */
     public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache): View
     {
@@ -128,4 +143,46 @@ class MeetingUserController extends AbstractController
             'collections' => $response
         ), Response::HTTP_OK, []);
     }
+
+    /**
+     * Get Meeting.
+     * @FOSRest\Get(path = "/users/{id}", name="user_index")
+     * @SWG\Response(
+     *     response=200,
+     *     description="Returns the Meetings of an user",
+     *     @SWG\Schema(
+     *         type="array",
+     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @SWG\Parameter(
+     *     name="order",
+     *     in="query",
+     *     type="string",
+     *     description="The field used to order Meetings"
+     * )
+     * @SWG\Tag(name="User")
+     *
+     *
+     * @return View
+     */
+    public function getApiUser($id): View
+    {
+        $repository = $this->getDoctrine()->getRepository(User::class);
+
+        // query for a single Product by its primary key (usually "id")
+        $user = $repository->find($id);
+        if (!$user) {
+            throw new HttpException(404, 'User not found');
+        }
+        // Move this in Meeting normalizer
+        $response = array(
+            'id' => $user->getId(),
+            'name' => $user->getEmail(),
+        );
+
+        return View::create($response, Response::HTTP_OK, []);
+    }
+
+
 }
