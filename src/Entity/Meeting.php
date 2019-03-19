@@ -56,16 +56,9 @@ class Meeting
     protected $users;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="meetings")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="meetings", cascade={"persist"})
      */
     private $tags;
-
-    /**
-     * @ORM\Column(type="integer")
-     * @OneToOne(targetEntity="User")
-     * @JoinColumn(name="organiser_id", referencedColumnName="id")
-     */
-    private $organiser;
 
      /**
       * @ORM\Column(type="datetime")
@@ -76,6 +69,11 @@ class Meeting
       * @ORM\Column(type="datetime")
       */
     protected $updatedAt;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="meetings")
+     */
+    private $organiser;
 
     /**
      * Constructor
@@ -242,18 +240,6 @@ class Meeting
         return $this;
     }
 
-    public function getOrganiser(): ?int
-    {
-        return $this->organiser;
-    }
-
-    public function setOrganiser(int $organiser): self
-    {
-        $this->organiser = $organiser;
-
-        return $this;
-    }
-
     /**
      * Pre persist event listener
      *
@@ -317,4 +303,17 @@ class Meeting
     {
         return (string) $this->getName();
     }
+
+    public function getOrganiser(): ?User
+    {
+        return $this->organiser;
+    }
+
+    public function setOrganiser(?User $organiser): self
+    {
+        $this->organiser = $organiser;
+
+        return $this;
+    }
+
 }

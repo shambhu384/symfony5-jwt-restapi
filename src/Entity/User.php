@@ -36,22 +36,6 @@ class User extends BaseUser
     protected $fullname;
 
     /**
-     * @var \Doctrine\Common\Collections\Collection|Meeting[]
-     *
-     * @ORM\ManyToMany(targetEntity="Meeting", inversedBy="users")
-     * @ORM\JoinTable(
-     *  name="user_meeting",
-     *  joinColumns={
-     *      @ORM\JoinColumn(name="user_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @ORM\JoinColumn(name="meeting_id", referencedColumnName="id")
-     *  }
-     * )
-     */
-    protected $meetings;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\UserDevice", mappedBy="userid")
      */
     private $userDevices;
@@ -66,6 +50,11 @@ class User extends BaseUser
       */
     protected $updatedAt;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Meeting", mappedBy="organiser")
+     */
+    private $meetings;
+
 
     /**
      * Constructor
@@ -73,9 +62,9 @@ class User extends BaseUser
     public function __construct()
     {
         parent::__construct();
-        $this->meetings = new ArrayCollection();
         $this->created = new \DateTime("now");
         $this->userDevices = new ArrayCollection();
+        $this->meetings = new ArrayCollection();
     }
 
     /**
@@ -101,31 +90,6 @@ class User extends BaseUser
     public function getCreated()
     {
         return $this->created;
-    }
-    /**
-     * @param Meeting $meeting
-     */
-    public function setMeeting(Meeting $meeting)
-    {
-        // avoid duplicates
-        if ($this->meetings->contains($meeting)) {
-            return;
-        }
-        $this->meetings->add($meeting);
-        $meeting->setUser($this);
-    }
-    /**
-     * @param Meeting $meeting
-     */
-    public function removeMeeting(Meeting $meeting)
-    {
-        // avoid duplicates
-        if (!$this->meetings->contains($meeting)) {
-            return;
-        }
-
-        $this->meetings->removeElement($meeting);
-        $meeting->removeUser($this);
     }
 
     /**
@@ -227,4 +191,34 @@ class User extends BaseUser
         return (string) $this->getName();
     }
 
+    /**
+     * @return Collection|Meeting[]
+     */
+    public function getMeetings(): Collection
+    {
+        return $this->meetings;
+    }
+
+    public function addMeeting(Meeting $meeting): self
+    {
+        if (!$this->meetings->contains($meeting)) {
+            $this->meetings[] = $meeting;
+            $meeting->setOrganiser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeMeeting(Meeting $meeting): self
+    {
+        if ($this->meetings->contains($meeting)) {
+            $this->meetings->removeElement($meeting);
+            // set the owning side to null (unless already changed)
+            if ($meeting->getOrganiser() === $this) {
+                $meeting->setOrganiser(null);
+            }
+        }
+
+        return $this;
+    }
 }

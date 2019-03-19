@@ -17,9 +17,9 @@ use App\Entity\User;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use FOS\RestBundle\Controller\Annotations\Version;
-use FOS\UserBundle\Model\UserManagerInterface;
 use Swagger\Annotations as SWG;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use App\Repository\UserRepository;
 
 
 /**
@@ -52,11 +52,11 @@ class MeetingRegistrationController extends AbstractController
      *
      * @return View
      */
-    public function registerUserMeeting(Request $request, UserManagerInterface  $userManager): View
+    public function registerUserMeeting(Request $request, UserRepository $userRepository): View
     {
         $em = $this->getDoctrine()->getManager();
         // Check user already exists
-        $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
+        $user = $UserRepository->findBy(array('id' => $request->get('user_id')));
         if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
@@ -96,11 +96,11 @@ class MeetingRegistrationController extends AbstractController
      * @SWG\Tag(name="Meetings")
      * @return View
      */
-    public function unregisterUserMeeting(Request $request, UserManagerInterface $userManager): View
+    public function unregisterUserMeeting(Request $request, UserRepositry $userRepositry): View
     {
         $em = $this->getDoctrine()->getManager();
         // Check user already exists
-        $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
+        $user = $UserRepositry->findBy(array('id' => $request->get('user_id')));
         if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
