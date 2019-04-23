@@ -1,7 +1,7 @@
 parameters:
-    locale: 'en'
     api.version: 'v1'
     meetings_directory: '%kernel.project_dir%/public/uploads/meetings'
+    locale: 'en'
 
 services:
     # default configuration for services in *this* file
@@ -29,14 +29,14 @@ services:
     sensio_framework_extra.view.listener:
         alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
 
-    fos_rest.serializer.exception_normalizer.jms:
-        class: App\Serializer\Normalizer\ExceptionHandler
-        arguments:
-            - '@fos_rest.exception.messages_map'
-            - '%kernel.debug%'
-        public: false       # Allows optimizing the container by removing unused services; this also means
-        tags:
-           - jms_serializer.subscribing_handler
+    #fos_rest.serializer.exception_normalizer.jms:
+    #    class: App\Serializer\Normalizer\ExceptionHandler
+    #    arguments:
+    #        - '@fos_rest.exception.messages_map'
+    #        - '%kernel.debug%'
+    #     public: false       # Allows optimizing the container by removing unused services; this also means
+    #    tags:
+    #       - jms_serializer.subscribing_handler
 
     app.rule_manager:
         class: App\Service\RuleManager
