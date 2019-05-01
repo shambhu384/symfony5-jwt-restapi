@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Normalizer;
 
-use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use App\Entity\User;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 class ExceptionNormalizer implements NormalizerInterface
 {

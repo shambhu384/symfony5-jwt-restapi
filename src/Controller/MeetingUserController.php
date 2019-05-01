@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Symfony\Component\Routing\Annotation\Route;
-use FOS\RestBundle\View\View;
+
+use App\Entity\User;
+use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\Version;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
+use FOS\UserBundle\Model\UserManagerInterface;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use App\Entity\User;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use App\Services\Interfaces\MeetingInterface;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
-use FOS\UserBundle\Model\UserManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use FOS\RestBundle\Controller\Annotations\Version;
-use Swagger\Annotations as SWG;
-use Nelmio\ApiDocBundle\Annotation\Model;
-
+use Symfony\Component\Routing\Annotation\Route;
 /**
  * Meeting user
  *
@@ -30,22 +30,6 @@ class MeetingUserController extends AbstractController
 {
     /**
      * @FOSRest\Post("/users")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Tag")
-     *
      */
     public function postUser(Request $request, \Swift_Mailer $mailer, UserManagerInterface $userManager)
     {

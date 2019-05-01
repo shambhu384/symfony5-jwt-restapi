@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Serializer\Normalizer;
 
+/**
+use App\Entity\User;
+use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
 use JMS\Serializer\GraphNavigatorInterface;
 use JMS\Serializer\JsonSerializationVisitor;
-use App\Entity\User;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use JMS\Serializer\EventDispatcher\EventSubscriberInterface;
-/**
  * User normalizer
  */
 //class UserNormalizer implements NormalizerInterface

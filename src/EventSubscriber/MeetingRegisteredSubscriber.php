@@ -6,9 +6,9 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Event\MeetingRegisteredEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Psr\Log\LoggerAwareTrait;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class MeetingRegisteredSubscriber implements EventSubscriberInterface
 {

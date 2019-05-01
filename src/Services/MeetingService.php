@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\MeetingRepository;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use App\Entity\User;
-use App\Services\Interfaces\MeetingInterface;
 use App\Entity\Meeting;
+use App\Entity\User;
+use App\Repository\MeetingRepository;
+use App\Services\Interfaces\MeetingInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * Class MeetingService
@@ -66,16 +66,10 @@ class MeetingService implements MeetingInterface
         return $this->meetingRepository->findAll();
     }
 
-    /**
-     *
-     */
     public function addMeeting(array $data): bool
     {
     }
 
-    /**
-     *
-     */
     public function updateMeeting(int $id, array $data): Meeting
     {
     }

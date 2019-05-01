@@ -4,39 +4,38 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use FOS\RestBundle\View\View;
-use FOS\RestBundle\Controller\Annotations as FOSRest;
 use App\Entity\Meeting;
-use App\Message\MeetingMessage;
 use App\Entity\User;
-use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use App\Event\MeetingRegisteredEvent;
 use App\MeetingEvents;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
+use App\Message\MeetingMessage;
+use App\Request\ParamConverter\MeetingConverter;
 use App\Services\Interfaces\MeetingInterface;
+use FOS\RestBundle\Controller\Annotations as FOSRest;
+use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\RequestParam;
+use FOS\RestBundle\Controller\Annotations\Version;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
 use Nelmio\ApiDocBundle\Annotation\Model;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Swagger\Annotations as SWG;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Controller\Annotations\Version;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use App\Request\ParamConverter\MeetingConverter;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Swagger\Annotations as SWG;
-
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Meeting Controller
@@ -58,21 +57,6 @@ class MeetingController extends FOSRestController
      * @param UrlGeneratorInterface $router
      *
      * @ParamConverter("meeting", converter="fos_rest.request_body")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Meetings")
      */
     public function postMeeting(
         Meeting $meeting,
@@ -115,22 +99,6 @@ class MeetingController extends FOSRestController
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
-     *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Meetings")
      *
      * @return View
      */
@@ -183,23 +151,6 @@ class MeetingController extends FOSRestController
     /**
      * Get Meeting.
      * @FOSRest\Get(path = "/meetings/{id}", name="meeting_index")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Meetings")
-     *
-     *
      * @return View
      */
     public function getMeeting($id): View
@@ -245,21 +196,6 @@ class MeetingController extends FOSRestController
      * Update an Meeting.
      * @FOSRest\Put(path = "/meetings/{id}")
      *
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Meetings")
      * @return View
      */
     public function putMeeting($id, Request $request): View
@@ -282,22 +218,6 @@ class MeetingController extends FOSRestController
      * Delete an Meeting.
      *
      * @FOSRest\Delete(path = "/meetings")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="Meetings")
-     *
      * @return View
      */
     public function deleteMeeting(Request $request): View

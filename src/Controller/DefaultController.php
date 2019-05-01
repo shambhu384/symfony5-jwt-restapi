@@ -1,6 +1,5 @@
 <?php
 
-
 declare(strict_types=1);
 
 namespace App\Controller;
@@ -14,9 +13,6 @@ use Psr\Log\LoggerInterface;
 
 class DefaultController extends AbstractController
 {
-    /**
-     * @Route("/", name="Landingpage")
-     */
     public function index(LoggerInterface $logger)
     {
         $logger->info('I just got the logger');

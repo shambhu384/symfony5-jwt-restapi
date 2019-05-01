@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use Symfony\Component\EventDispatcher\Event;
 use App\Entity\Meeting;
+use Symfony\Component\EventDispatcher\Event;
 
 class MeetingUnRegisteredEvent extends Event
 {
