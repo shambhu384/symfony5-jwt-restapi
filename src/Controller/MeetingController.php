@@ -75,8 +75,7 @@ class MeetingController extends FOSRestController
         $em->persist($meeting);
         $em->flush();
 
-        $meetingEvent = new MeetingRegisteredEvent($meeting);
-        $dispatcher->dispatch(MeetingEvents::MEETING_REGISTERED, $meetingEvent);
+        $dispatcher->dispatch(new MeetingRegisteredEvent($meeting));
 
         $response = array(
             'id' => $meeting->getId(),
