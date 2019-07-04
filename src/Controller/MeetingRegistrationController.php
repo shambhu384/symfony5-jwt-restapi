@@ -10,7 +10,6 @@ use App\Entity\User;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
 use FOS\RestBundle\Controller\Annotations\Version;
 use FOS\RestBundle\View\View;
-use FOS\UserBundle\Model\UserManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -20,6 +19,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\MeetingRepository;
+use App\Repository\UserRepository;
 
 /**
  * Meeting Controller
@@ -35,16 +37,20 @@ class MeetingRegistrationController extends AbstractController
      *
      * @return View
      */
-    public function registerUserMeeting(Request $request, UserManagerInterface  $userManager): View
+    public function registerUserMeeting(
+        EntityManagerInterface $em,
+        MeetingRepository $meetingRepository,
+        Request $request,
+        UserRepository $userRepository
+    ): View
     {
-        $em = $this->getDoctrine()->getManager();
         // Check user already exists
-        $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
+        $user = $userRepository->findBy(array('id' => $request->get('user_id')));
         if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
 
-        $meeting = $em->getRepository(Meeting::class)->find(array('id' => $request->get('meeting_id')));
+        $meeting = $meetingRepository->find(array('id' => $request->get('meeting_id')));
         if (!$meeting) {
             throw new HttpException(400, 'Meetingid invalid.');
         }
@@ -64,16 +70,20 @@ class MeetingRegistrationController extends AbstractController
      *
      * @return View
      */
-    public function unregisterUserMeeting(Request $request, UserManagerInterface $userManager): View
+    public function unregisterUserMeeting(
+        EntityManagerInterface $em,
+        MeetingRepository $meetingRepository,
+        Request $request,
+        UserRepository $userRepository
+    ): View
     {
-        $em = $this->getDoctrine()->getManager();
         // Check user already exists
-        $user = $userManager->findUserBy(array('id' => $request->get('user_id')));
+        $user = $userRepository->findBy(array('id' => $request->get('user_id')));
         if (!$user) {
             throw new HttpException(400, 'Userid invalid.');
         }
 
-        $meeting = $em->getRepository(Meeting::class)->find(array('id' => $request->get('meeting_id')));
+        $meeting = $meetingRepository->find(array('id' => $request->get('meeting_id')));
         if (!$meeting) {
             throw new HttpException(400, 'Meetingid invalid.');
         }

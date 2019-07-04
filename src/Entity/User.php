@@ -12,16 +12,16 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
-use FOS\UserBundle\Model\User as BaseUser;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\User\UserInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
  *
  * @ORM\Table(name="fos_user")
  */
-class User extends BaseUser
+class User implements UserInterface
 {
     /**
      * @ORM\Id
@@ -227,5 +227,31 @@ class User extends BaseUser
     {
         return (string) $this->getName();
     }
+
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+
+    public function getPassword()
+    {
+        return $this->password;
+    }
+
+    public function getSalt()
+    {
+        return $this->password;
+    }
+
+
+    public function getUsername()
+    {
+        return $this->password;
+    }
+
+    public function eraseCredentials() {
+        return [];
+    }
+
 
 }

@@ -12,7 +12,6 @@ use FOS\RestBundle\Controller\Annotations\QueryParam;
 use FOS\RestBundle\Controller\Annotations\Version;
 use FOS\RestBundle\Request\ParamFetcherInterface;
 use FOS\RestBundle\View\View;
-use FOS\UserBundle\Model\UserManagerInterface;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -21,6 +20,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\UserRepository;
+use Doctrine\ORM\EntityManagerInterface;
 /**
  * Meeting user
  *
@@ -31,10 +32,10 @@ class MeetingUserController extends AbstractController
     /**
      * @FOSRest\Post("/users")
      */
-    public function postUser(Request $request, \Swift_Mailer $mailer, UserManagerInterface $userManager)
+    public function postUser(Request $request, \Swift_Mailer $mailer, UserRepository $userRepository)
     {
         // Check user already exists
-        $user = $userManager->findUserByUsername($request->get('username'));
+        $user = $userRepository->findBy(['username' => $request->get('username')]);
 
         if ($user) {
             // check duplicate email
@@ -102,13 +103,12 @@ class MeetingUserController extends AbstractController
      * )
      * @SWG\Tag(name="User")
      */
-    public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache): View
+    public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache, EntityManagerInterface $em, UserRepository $userRepository): View
     {
-        $repository = $this->getDoctrine()->getRepository(User::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
-        $users = $repository->findAll(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
+        $users = $userRepository->findAll(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
         // Move this in User normalizer
         $response = array();
         if (count($users) > 0) {
@@ -150,12 +150,10 @@ class MeetingUserController extends AbstractController
      *
      * @return View
      */
-    public function getApiUser($id): View
+    public function getApiUser($id, UserRepository $userRepository): View
     {
-        $repository = $this->getDoctrine()->getRepository(User::class);
-
         // query for a single Product by its primary key (usually "id")
-        $user = $repository->find($id);
+        $user = $userRepository->find($id);
         if (!$user) {
             throw new HttpException(404, 'User not found');
         }

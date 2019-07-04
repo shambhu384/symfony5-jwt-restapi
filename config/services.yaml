@@ -29,73 +29,7 @@ services:
     sensio_framework_extra.view.listener:
         alias: Sensio\Bundle\FrameworkExtraBundle\EventListener\TemplateListener
 
-    #fos_rest.serializer.exception_normalizer.jms:
-    #    class: App\Serializer\Normalizer\ExceptionHandler
-    #    arguments:
-    #        - '@fos_rest.exception.messages_map'
-    #        - '%kernel.debug%'
-    #     public: false       # Allows optimizing the container by removing unused services; this also means
-    #    tags:
-    #       - jms_serializer.subscribing_handler
-
-    app.rule_manager:
-        class: App\Service\RuleManager
-        public: true
-
-    app.rule_manager.is_numeric:
-        class: App\Service\IsNumericRule
-        public: true
-        tags:
-           - rule_manager.rule
-
-    app.rule_manager.greater_than:
-        class: App\Service\GreaterThanRule
-        public: true
-        tags:
-           - rule_manager.rule
-
-    get_set_method_normalizer:
-        class: Symfony\Component\Serializer\Normalizer\GetSetMethodNormalizer
-        public: false
-        tags: [serializer.normalizer]
-
-    app.encoder.json:
-        class: Symfony\Component\Serializer\Encoder\JsonEncoder
-        public: true
-
-    app.normalizer.user:
-        class: App\Serializer\Normalizer\UserNormalizer
-        public: true
-
-    app.listener.meeting_registered:
-        class: App\EventListener\MeetingRegisteredListener
-        tags:
-            - { name: kernel.event_listener, event: meeting.registered }
-
-# define services
-    App\Services\MeetingService: ~
-
-    App\Services\Interfaces\MeetingInterface: '@App\Services\MeetingService'
-
-    meeting_converter:
-        class: App\Request\ParamConverter\MeetingConverter
-        tags:
-            - { name: request.param_converter, priority: -2, converter: meeting_converter }
-
 
     App\MessageHandler\:
         resource: '../src/MessageHandler'
         tags: ['messenger.message_handler']
-
-    # Service locator
-    my.event_writers:
-        class: Symfony\Component\DependencyInjection\ServiceLocator
-        arguments:
-            - memory: '@App\Infrastructure\InMemory'
-            - ampq: '@App\Infrastructure\RabbitMQ'
-        tags: ['controller.service_locator']
-
-    App\Infrastructure\InMemory: ~
-
-    App\Infrastructure\RabbitMQ: ~
-
