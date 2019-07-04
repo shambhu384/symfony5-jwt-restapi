@@ -26,18 +26,20 @@ use App\Repository\UserRepository;
 /**
  * Meeting Controller
  *
- * @Route("/meetings")
+ * @Route("/meetings/{id}")
  * @Version("v1")
  */
 class MeetingRegistrationController extends AbstractController
 {
     /**
      * Register
-     * @FOSRest\Post("/registration")
+     * @FOSRest\Post("/user/{user}")
      *
      * @return View
      */
     public function registerUserMeeting(
+        Meeting $meeting,
+        User $user,
         EntityManagerInterface $em,
         MeetingRepository $meetingRepository,
         Request $request,

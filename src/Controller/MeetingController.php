@@ -24,6 +24,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use FOS\RestBundle\Context\Context;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 /**
  * Meeting Controller
@@ -99,8 +100,6 @@ class MeetingController extends FOSRestController
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
         $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
-
-        return $this->view($meetings);
 
         // Move this in Meeting normalizer
         $response = array();
@@ -179,14 +178,7 @@ class MeetingController extends FOSRestController
             }
         }
 
-        $view = View::create($meeting, Response::HTTP_OK);
-
-        $context = new Context();
-        $context->addGroup('user');
-
-        $view->setContext($context);
-
-        return $view;
+        return View::create($meeting, Response::HTTP_OK);
     }
 
     /**
@@ -195,17 +187,16 @@ class MeetingController extends FOSRestController
      *
      * @return View
      */
-    public function putMeeting($id, Request $request): View
+    public function putMeeting($id, Request $request, MeetingRepository $meetingRepository, EntityManagerInterface $em): View
     {
-        $em = $this->getDoctrine()->getManager();
-        $meeting = $em->getRepository(Meeting::class)->find($id);
+        $meeting = $meetingRepository->find($id);
         if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
         $postdata = json_decode($request->getContent());
         $meeting->setName($postdata->name);
         $meeting->setDescription($postdata->description);
-        $meeting->setDateTime(new \DateTime($postdata->date));
+        $meeting->setDateTime(new \DateTime($postdata->datetime));
         $em->persist($meeting);
         $em->flush();
         return View::create($meeting, Response::HTTP_OK, []);
@@ -214,12 +205,12 @@ class MeetingController extends FOSRestController
     /**
      * Delete an Meeting.
      *
-     * @FOSRest\Delete(path = "/meetings")
+     * @FOSRest\Delete(path = "/meetings/{id}")
      * @return View
      */
-    public function deleteMeeting(Request $request, MeetingRepository $meetingRepository): View
+    public function deleteMeeting($id, Request $request, MeetingRepository $meetingRepository, EntityManagerInterface $em): View
     {
-        $meeting = $meetingRepository->find($request->get('meeting_id'));
+        $meeting = $meetingRepository->find($id);
         if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }

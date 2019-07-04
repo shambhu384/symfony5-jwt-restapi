@@ -35,7 +35,7 @@ class MeetingUserController extends AbstractController
     public function postUser(Request $request, \Swift_Mailer $mailer, UserRepository $userRepository)
     {
         // Check user already exists
-        $user = $userRepository->findBy(['username' => $request->get('username')]);
+        $user = $userRepository->findBy(['email' => $request->get('username')]);
 
         if ($user) {
             // check duplicate email
