@@ -14,6 +14,7 @@ use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MeetingRepository")
  * @ORM\Table(name="meeting")
@@ -32,6 +33,7 @@ class Meeting
     /**
      * @Assert\NotBlank()
      * @Assert\Length(min=10)
+     * @Groups("user")
      * @ORM\Column(type="string", length=100)
      */
     public $name;

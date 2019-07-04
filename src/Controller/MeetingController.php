@@ -5,22 +5,25 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Meeting;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
-use Symfony\Component\Cache\Adapter\AdapterInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use FOS\RestBundle\View\View;
-use FOS\RestBundle\Controller\FOSRestController;
-use Symfony\Component\HttpFoundation\Response;
-use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use Symfony\Component\Messenger\MessageBusInterface;
+use App\Event\MeetingRegisteredEvent;
 use App\Repository\MeetingRepository;
-use FOS\RestBundle\Controller\Annotations\Version;
+use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use FOS\RestBundle\Controller\Annotations\QueryParam;
+use FOS\RestBundle\Controller\Annotations\Version;
+use FOS\RestBundle\Controller\FOSRestController;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\View\View;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+use FOS\RestBundle\Context\Context;
 
 /**
  * Meeting Controller
@@ -78,7 +81,6 @@ class MeetingController extends FOSRestController
     /**
      * Lists all Meetings.
      * @FOSRest\Get("/meetings")
-     *
      * @QueryParam(name="search", requirements="[a-z]+", description="search", allowBlank=false)
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
@@ -91,13 +93,14 @@ class MeetingController extends FOSRestController
         MeetingRepository $meetingRepository,
         MessageBusInterface $bus,
         ParamFetcherInterface $paramFetcher
-    ): JsonResponse
-    {
+    )    {
         $repository = $this->getDoctrine()->getRepository(Meeting::class);
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
         $page = $limit * ($paramFetcher->get('page') - 1);
         $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
+
+        return $this->view($meetings);
 
         // Move this in Meeting normalizer
         $response = array();
@@ -145,7 +148,7 @@ class MeetingController extends FOSRestController
     public function getMeeting($id, MeetingRepository $meetingRepository): View
     {
         // query for a single Product by its primary key (usually "id")
-        $meeting = $MeetingRepository->find($id);
+        $meeting = $meetingRepository->find($id);
         if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
@@ -176,7 +179,14 @@ class MeetingController extends FOSRestController
             }
         }
 
-        return View::create($response, Response::HTTP_OK, []);
+        $view = View::create($meeting, Response::HTTP_OK);
+
+        $context = new Context();
+        $context->addGroup('user');
+
+        $view->setContext($context);
+
+        return $view;
     }
 
     /**
