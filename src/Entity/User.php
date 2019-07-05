@@ -6,7 +6,6 @@ declare(strict_types=1);
 namespace App\Entity;
 
 
-use App\Entity\Article;
 use App\Entity\Meeting;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,11 +14,12 @@ use Doctrine\ORM\Mapping\OneToMany;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\HasLifecycleCallbacks()
- *
- * @ORM\Table(name="fos_user")
  */
 class User implements UserInterface
 {
@@ -31,8 +31,8 @@ class User implements UserInterface
     protected $id;
 
     /**
+     * @Groups("user")
      * @ORM\Column(type="string", length=100)
-     * @SWG\Property(type="string", maxLength=255)
      */
     protected $fullname;
 
@@ -67,15 +67,39 @@ class User implements UserInterface
       */
     protected $updatedAt;
 
+    /**
+     * @Assert\NotBlank
+     * @Assert\Email
+     * @ORM\Column(type="string", length=255)
+     */
+    private $email;
+
+    /**
+     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=255)
+     */
+    private $password;
+
+    private $plainPassword;
+
+    /**
+     * @Assert\NotBlank
+     * @ORM\Column(type="string", length=255)
+     */
+    private $username;
+
+    /**
+     * @ORM\Column(type="array")
+     */
+    private $roles = [];
+
 
     /**
      * Constructor
      */
     public function __construct()
     {
-        parent::__construct();
         $this->meetings = new ArrayCollection();
-        $this->created = new \DateTime("now");
         $this->userDevices = new ArrayCollection();
     }
 
@@ -99,10 +123,6 @@ class User implements UserInterface
         $this->fullname = $fullname;
     }
 
-    public function getCreated()
-    {
-        return $this->created;
-    }
     /**
      * @param Meeting $meeting
      */
@@ -253,5 +273,44 @@ class User implements UserInterface
         return [];
     }
 
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
 
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+
+    public function setPlainPassword($plainPassword) {
+        $this->plainPassword = $plainPassword;
+    }
+
+    public function getId() {
+        return $this->id;
+    }
 }

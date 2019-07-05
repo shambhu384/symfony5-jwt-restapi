@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-
 use App\Entity\User;
 use App\Services\Interfaces\MeetingInterface;
 use FOS\RestBundle\Controller\Annotations as FOSRest;
@@ -22,6 +21,9 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Component\Validator\ConstraintViolationListInterface;
+
 /**
  * Meeting user
  *
@@ -31,53 +33,32 @@ class MeetingUserController extends AbstractController
 {
     /**
      * @FOSRest\Post("/users")
+     * @ParamConverter("user", converter="fos_rest.request_body")
      */
-    public function postUser(Request $request, \Swift_Mailer $mailer, UserRepository $userRepository)
+    public function postUser(
+        User $user,
+        Request $request,
+        UserRepository $userRepository,
+        ConstraintViolationListInterface $validationErrors,
+        EntityManagerInterface $em
+    ): View
     {
-        // Check user already exists
-        $user = $userRepository->findBy(['email' => $request->get('username')]);
-
-        if ($user) {
-            // check duplicate email
-            if ($user->getemail() == $request->get('email')) {
-                throw new HttpException(400, 'email already exists.');
-            }
-
-            throw new HttpException(400, 'username already exists.');
+        if (count($validationErrors) > 0) {
+            return View::create(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
         }
 
-        $user = new User;
-        $user->setUsername($request->get('username'));
-        $user->setFullName($request->get('fullname'));
-        $user->setEmail($request->get('email'));
-        $user->setPlainPassword($request->get('password'));
-        $user->setEnabled(true);
-        $user->setSuperAdmin(true);
-        // Save user
-        $userManager->updateUser($user);
+        $em->persist($user);
+        $em->flush();
 
         // Add UserNormalizer to return normalize entity
         $response  = array(
             'id' => $user->getId(),
             'fullname' => $user->getFullName(),
             'email' => $user->getEmail(),
-            'created_at' => $user->getCreated()
+            'created_at' => null
         );
 
-        $message = (new \Swift_Message('Hello Email'))
-        ->setFrom('send@example.com')
-        ->setTo('recipient@example.com')
-        ->setBody(
-            $this->renderView(
-                'emails/registration.html.twig',
-                array('name' => $user->getFullName())
-            ),
-            'text/html'
-        );
-
-        $mailer->send($message);
-
-        return View::create($response, Response::HTTP_CREATED, []);
+        return View::create($user, Response::HTTP_CREATED, ['context' => ['user']]);
     }
 
     /**
