@@ -1,7 +1,29 @@
 security:
-    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+
     providers:
-        in_memory: { memory: ~ }
+        users:
+            entity:
+                # the class of the entity that represents users
+                class: 'App\Entity\User'
+                # the property to query by - e.g. username, email, etc
+                property: 'username'
+                # optional: if you're using multiple Doctrine entity
+                # managers, this option defines which one to use
+                # manager_name: 'customer'
+
+    encoders:
+        # use your user class name here
+        App\Entity\User:
+            # Use native password encoder
+            # This value auto-selects the best possible hashing algorithm
+            # (i.e. Sodium when available).
+            algorithm: auto
+
+    role_hierarchy:
+        ROLE_ADMIN:       ROLE_USER
+        ROLE_SUPER_ADMIN: [ROLE_ADMIN, ROLE_ALLOWED_TO_SWITCH]
+
+
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/

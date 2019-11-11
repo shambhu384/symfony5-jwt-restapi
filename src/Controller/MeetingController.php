@@ -101,39 +101,13 @@ class MeetingController extends FOSRestController
         $page = $limit * ($paramFetcher->get('page') - 1);
         $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
 
-        // Move this in Meeting normalizer
-        $response = array();
-        foreach ($meetings as $meeting) {
-            // find users
-            $users = [];
-            foreach ($meeting->getUsers() as $user) {
-                $users[] = array(
-                    'id' => $user->getId(),
-                    'fullname' => $user->getFullName(),
-                    'email' => $user->getEmail()
-                );
-            }
-
-            $response[] = array(
-                'id' => $meeting->getId(),
-                'name' => $meeting->getName(),
-                'description' => $meeting->getDescription(),
-                'date' => $meeting->getDateTime(),
-                'organiser' => $meeting->getOrganiser(),
-                'users' => $users
-            );
-        }
-
-        // send notification
-        //$bus->dispatch(new MeetingMessage());
-
         return new JsonResponse(array(
             "_links" => array(
                 "next" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  + 1),
                 "prev" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  - 1),
             ),
             'limit' => $limit,
-            'results' => $response,
+            'results' => $meetings,
             'size' => (int) $limit,
             'start' => $page
         ), Response::HTTP_OK, []);

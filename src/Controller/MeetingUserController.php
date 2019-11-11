@@ -68,21 +68,6 @@ class MeetingUserController extends AbstractController
      * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
      * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=User::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="User")
      */
     public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache, EntityManagerInterface $em, UserRepository $userRepository): View
     {
@@ -112,23 +97,6 @@ class MeetingUserController extends AbstractController
     /**
      * Get Meeting.
      * @FOSRest\Get(path = "/users/{id}", name="user_index")
-     * @SWG\Response(
-     *     response=200,
-     *     description="Returns the Meetings of an user",
-     *     @SWG\Schema(
-     *         type="array",
-     *         @SWG\Items(ref=@Model(type=Meeting::class, groups={"full"}))
-     *     )
-     * )
-     * @SWG\Parameter(
-     *     name="order",
-     *     in="query",
-     *     type="string",
-     *     description="The field used to order Meetings"
-     * )
-     * @SWG\Tag(name="User")
-     *
-     *
      * @return View
      */
     public function getApiUser($id, UserRepository $userRepository): View

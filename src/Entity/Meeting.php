@@ -15,6 +15,7 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Serializer\Annotation\Groups;
+
 /**
  * @ORM\Entity(repositoryClass="App\Repository\MeetingRepository")
  * @ORM\Table(name="meeting")
@@ -68,14 +69,16 @@ class Meeting
      */
     private $organiser;
 
-     /**
-      * @ORM\Column(type="datetime")
-      */
+    /**
+     * @ORM\Column(type="datetime")
+     */
     protected $createdAt;
 
-     /**
-      * @ORM\Column(type="datetime")
-      */
+    /**
+     * Updated at
+     *
+     * @ORM\Column(type="datetime")
+     */
     protected $updatedAt;
 
     /**
@@ -102,10 +105,13 @@ class Meeting
      * Set id.
      *
      * @param int $id
+     *
+     * @return self
      */
-    public function setId($id): int
+    public function setId(int $id)
     {
         $this->id = $id;
+
     }
 
     /**
@@ -259,20 +265,25 @@ class Meeting
      * Pre persist event listener
      *
      * @ORM\PrePersist
+     *
+     * @return void
      */
     public function beforeSave()
     {
-        $this->createdAt = new \DateTime('now', new \DateTimeZone('UTC'));
-        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        $this->createdAt = new DateTime('now', new \DateTimeZone('UTC'));
+        $this->updatedAt = new DateTime('now', new \DateTimeZone('UTC'));
     }
+
     /**
      * Pre update event handler
      *
      * @ORM\PreUpdate
+     *
+     * @return void
      */
     public function doPreUpdate()
     {
-        $this->updatedAt = new \DateTime('now', new \DateTimeZone('UTC'));
+        $this->updatedAt = new DateTime('now', new \DateTimeZone('UTC'));
     }
 
     /**
@@ -285,9 +296,11 @@ class Meeting
         return $this->createdAt;
     }
     /**
-     * @param \DateTime
+     * Set created at
      *
-     * @return Account
+     * @param DateTime $created timestamp
+     *
+     * @return self
      */
     public function setCreatedAt($created)
     {
@@ -303,10 +316,13 @@ class Meeting
     {
         return $this->updatedAt;
     }
+
     /**
-     * @param \DateTime
+     * Set updated at
      *
-     * @return Account
+     * @param DateTime $updated timestamp
+     *
+     * @return self
      */
     public function setUpdatedAt($updated)
     {
@@ -314,7 +330,12 @@ class Meeting
         return $this;
     }
 
-    public function __toString()
+    /**
+     * {@inherit}
+     *
+     * @return string
+     */
+    public function __toString(): string
     {
         return (string) $this->getName();
     }

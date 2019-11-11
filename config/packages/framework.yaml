@@ -13,8 +13,6 @@ framework:
     php_errors:
         log: true
 
-    templating:
-        engines: ['twig', 'php']
     cache:
         app: cache.adapter.filesystem
         directory: '%kernel.cache_dir%/pools'
