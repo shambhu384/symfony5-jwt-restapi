@@ -7,14 +7,9 @@ namespace App\Controller;
 
 use App\Entity\Meeting;
 use App\Entity\User;
-use FOS\RestBundle\Controller\Annotations as FOSRest;
-use FOS\RestBundle\Controller\Annotations\Version;
-use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,15 +22,12 @@ use App\Repository\UserRepository;
  * Meeting Controller
  *
  * @Route("/meetings/{id}")
- * @Version("v1")
  */
-class MeetingRegistrationController extends AbstractController
+class MeetingRegistrationController
 {
     /**
      * Register
-     * @FOSRest\Post("/user/{user}")
      *
-     * @return View
      */
     public function registerUserMeeting(
         Meeting $meeting,
@@ -44,7 +36,7 @@ class MeetingRegistrationController extends AbstractController
         MeetingRepository $meetingRepository,
         Request $request,
         UserRepository $userRepository
-    ): View
+    ): Response
     {
         // Check user already exists
         $user = $userRepository->findBy(array('id' => $request->get('user_id')));
@@ -63,21 +55,19 @@ class MeetingRegistrationController extends AbstractController
         $em->persist($user);
         $em->persist($meeting);
         $em->flush();
-        return View::create('', Response::HTTP_NO_CONTENT, []);
+        return new Response('', Response::HTTP_NO_CONTENT, []);
     }
 
     /**
      * Register
-     * @FOSRest\DELETE("/unregistration")
      *
-     * @return View
      */
     public function unregisterUserMeeting(
         EntityManagerInterface $em,
         MeetingRepository $meetingRepository,
         Request $request,
         UserRepository $userRepository
-    ): View
+    ): Response
     {
         // Check user already exists
         $user = $userRepository->findBy(array('id' => $request->get('user_id')));
@@ -95,6 +85,6 @@ class MeetingRegistrationController extends AbstractController
         $em->remove($meeting);
         //$em->remove($user);
         $em->flush();
-        return View::create('', Response::HTTP_NO_CONTENT, []);
+        return new Response('', Response::HTTP_NO_CONTENT, []);
     }
 }

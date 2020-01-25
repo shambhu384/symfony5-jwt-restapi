@@ -15,5 +15,8 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: ~
+        pools:
+
+            redis.cache:
+                adapter: cache.adapter.redis
+                provider: app.my_custom_redis_provider

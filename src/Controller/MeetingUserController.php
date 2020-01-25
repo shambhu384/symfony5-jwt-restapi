@@ -6,13 +6,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Services\Interfaces\MeetingInterface;
-use FOS\RestBundle\Controller\Annotations as FOSRest;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Controller\Annotations\Version;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,14 +19,10 @@ use Symfony\Component\Validator\ConstraintViolationListInterface;
 
 /**
  * Meeting user
- *
- * @Version("v1")
  */
-class MeetingUserController extends AbstractController
+class MeetingUserController
 {
     /**
-     * @FOSRest\Post("/users")
-     * @ParamConverter("user", converter="fos_rest.request_body")
      */
     public function postUser(
         User $user,
@@ -41,10 +30,10 @@ class MeetingUserController extends AbstractController
         UserRepository $userRepository,
         ConstraintViolationListInterface $validationErrors,
         EntityManagerInterface $em
-    ): View
+    ): Response
     {
         if (count($validationErrors) > 0) {
-            return View::create(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
+            return new Response(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
         }
 
         $em->persist($user);
@@ -58,18 +47,12 @@ class MeetingUserController extends AbstractController
             'created_at' => null
         );
 
-        return View::create($user, Response::HTTP_CREATED, ['context' => ['user']]);
+        return new Response($user, Response::HTTP_CREATED, ['context' => ['user']]);
     }
 
     /**
-     * @FOSRest\Get("/users")
-     *
-     * @QueryParam(name="search", requirements="[a-z]+", description="search", allowBlank=false)
-     * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
-     * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
-     * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
      */
-    public function getUsers(ParamFetcherInterface $paramFetcher, AdapterInterface $cache, EntityManagerInterface $em, UserRepository $userRepository): View
+    public function getUsers(AdapterInterface $cache, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
         // add pagination on data using ParamFetcherInterface
         $limit = $paramFetcher->get('limit');
@@ -88,7 +71,7 @@ class MeetingUserController extends AbstractController
             }
         }
 
-        return View::create(array(
+        return new Response(array(
             "metadata" => array("limit" => (int)$limit, "start"=> $page),
             'collections' => $response
         ), Response::HTTP_OK, []);
@@ -96,10 +79,9 @@ class MeetingUserController extends AbstractController
 
     /**
      * Get Meeting.
-     * @FOSRest\Get(path = "/users/{id}", name="user_index")
-     * @return View
+     * @return Response
      */
-    public function getApiUser($id, UserRepository $userRepository): View
+    public function getApiUser($id, UserRepository $userRepository): Response
     {
         // query for a single Product by its primary key (usually "id")
         $user = $userRepository->find($id);
@@ -112,8 +94,6 @@ class MeetingUserController extends AbstractController
             'name' => $user->getEmail(),
         );
 
-        return View::create($response, Response::HTTP_OK, []);
+        return new Response($response, Response::HTTP_OK, []);
     }
-
-
 }

@@ -65,6 +65,7 @@ class Meeting
     /**
      * @ORM\Column(type="integer")
      * @OneToOne(targetEntity="User")
+     * @Groups("user")
      * @JoinColumn(name="organiser_id", referencedColumnName="id")
      */
     private $organiser;

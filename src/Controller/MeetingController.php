@@ -8,12 +8,6 @@ use App\Entity\Meeting;
 use App\Event\MeetingRegisteredEvent;
 use App\Repository\MeetingRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use FOS\RestBundle\Controller\Annotations as FOSRest;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Controller\Annotations\Version;
-use FOS\RestBundle\Controller\FOSRestController;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -23,21 +17,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
-use FOS\RestBundle\Context\Context;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * Meeting Controller
  *
- * @Version("v1")
+ * @Route("/meetings", name="meetins_")
  */
-class MeetingController extends FOSRestController
+class MeetingController
 {
 
     /**
      * Create Meeting.
      *
-     * @FOSRest\Post("/meetings")
+     * @Route("/", name="post", methods="POST")
      *
      * @param Request $request
      * @param EventDispatcherInterface $dispatcher
@@ -45,7 +42,6 @@ class MeetingController extends FOSRestController
      * @param AdapterInterface $cache
      * @param UrlGeneratorInterface $router
      *
-     * @ParamConverter("meeting", converter="fos_rest.request_body")
      */
     public function postMeeting(
         AdapterInterface $cache,
@@ -55,10 +51,10 @@ class MeetingController extends FOSRestController
         Meeting $meeting,
         Request $request,
         UrlGeneratorInterface $router
-    ): View {
+    ): Response {
 
         if (count($validationErrors) > 0) {
-            return View::create(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
+            return new Response(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
         }
 
         $em->persist($meeting);
@@ -76,49 +72,33 @@ class MeetingController extends FOSRestController
                 array('id' => $meeting->getId(), 'version' => 'v1')
             )
         );
-        return View::create($meeting, Response::HTTP_CREATED, []);
+        return new Response($meeting, Response::HTTP_CREATED, []);
     }
 
     /**
      * Lists all Meetings.
-     * @FOSRest\Get("/meetings")
-     * @QueryParam(name="search", requirements="[a-z]+", description="search", allowBlank=false)
-     * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
-     * @QueryParam(name="limit", requirements="\d+", default="5", description="How many notes to return.")
-     * @QueryParam(name="sort", requirements="(asc|desc)", allowBlank=false, default="desc", description="Sort direction")
-     *
-     * @return View
+     * @Route("/", name="get_all", methods={"GET"})
      */
-    public function getMeetings(
-        AdapterInterface $cache,
-        MeetingRepository $meetingRepository,
-        MessageBusInterface $bus,
-        ParamFetcherInterface $paramFetcher
-    )    {
-        $repository = $this->getDoctrine()->getRepository(Meeting::class);
+    public function getMeetings(CacheInterface $redisCache, MeetingRepository $meetingRepository, SerializerInterface $serializer)    {
         // add pagination on data using ParamFetcherInterface
-        $limit = $paramFetcher->get('limit');
-        $page = $limit * ($paramFetcher->get('page') - 1);
-        $meetings = $repository->findBy(array(), array('id' => $paramFetcher->get('sort')), $limit, $page);
 
-        return new JsonResponse(array(
-            "_links" => array(
-                "next" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  + 1),
-                "prev" => sprintf('/meetings?limit=%d&page=%d', $limit, $paramFetcher->get('page')  - 1),
-            ),
-            'limit' => $limit,
-            'results' => $meetings,
-            'size' => (int) $limit,
-            'start' => $page
-        ), Response::HTTP_OK, []);
+        $meetings = $redisCache->get('meetings', function (ItemInterface $item) use ($meetingRepository) {
+            return $meetingRepository->findAll();
+        });
+
+
+        $content = $serializer->serialize($meetings, 'json', ['groups' => 'user']);
+
+
+        return new JsonResponse($content, Response::HTTP_OK, [], true);
     }
 
     /**
      * Get Meeting.
-     * @FOSRest\Get(path = "/meetings/{id}", name="meeting_index")
-     * @return View
+     *
+     * @Route("/{id<\d+>?1}", name="meeting_index")
      */
-    public function getMeeting($id, MeetingRepository $meetingRepository): View
+    public function getMeeting($id, MeetingRepository $meetingRepository): Response
     {
         // query for a single Product by its primary key (usually "id")
         $meeting = $meetingRepository->find($id);
@@ -152,12 +132,11 @@ class MeetingController extends FOSRestController
             }
         }
 
-        return View::create($meeting, Response::HTTP_OK);
+        return new Response($meeting, Response::HTTP_OK);
     }
 
     /**
      * Update an Meeting.
-     * @FOSRest\Put(path = "/meetings/{id}")
      *
      * @return View
      */
@@ -179,7 +158,6 @@ class MeetingController extends FOSRestController
     /**
      * Delete an Meeting.
      *
-     * @FOSRest\Delete(path = "/meetings/{id}")
      * @return View
      */
     public function deleteMeeting($id, Request $request, MeetingRepository $meetingRepository, EntityManagerInterface $em): View

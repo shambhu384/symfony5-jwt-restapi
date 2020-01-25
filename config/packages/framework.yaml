@@ -12,18 +12,3 @@ framework:
     #fragments: true
     php_errors:
         log: true
-
-    cache:
-        app: cache.adapter.filesystem
-        directory: '%kernel.cache_dir%/pools'
-    #        default_doctrine_provider: ~
-    #    default_psr6_provider: ~
-    #    default_redis_provider: 'redis://localhost'
-    #    default_memcached_provider: 'memcached://localhost'
-        pools:
-            meeting:
-                adapter: cache.app
-                public: false
-                default_lifetime: 0
-                provider: ~
-                clearer: ~

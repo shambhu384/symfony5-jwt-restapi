@@ -8,15 +8,8 @@ namespace App\Controller;
 use App\Entity\Meeting;
 use App\Entity\User;
 use App\Event\MeetingRegisteredEvent;
-use FOS\RestBundle\Controller\Annotations as FOSRest;
-use FOS\RestBundle\Controller\Annotations\QueryParam;
-use FOS\RestBundle\Controller\Annotations\Version;
-use FOS\RestBundle\Request\ParamFetcherInterface;
-use FOS\RestBundle\View\View;
-use Nelmio\ApiDocBundle\Annotation\Model;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Swagger\Annotations as SWG;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -30,19 +23,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  * User devices
  *
  * @Route("/users")
- * @Version("v1")
  */
 
-class UserDeviceController extends AbstractController
+class UserDeviceController
 {
     /**
      * @Route("/devices", name="user_device")
-     * @QueryParam(name="page", requirements="\d+", default="1", description="Page of the overview.")
      *
-     * @return View
+     * @return Response
      */
-    public function index(ParamFetcherInterface $paramFetcher)
+    public function device()
     {
-        return View::create(['page' => $paramFetcher->get('page')], Response::HTTP_CREATED, []);
+        return new Response(['page' => 1], Response::HTTP_CREATED, []);
+    }
+
+    /**
+     * @Route("/devices", name="user_device")
+     *
+     * @return Response
+     */
+    public function decvices()
+    {
+        return new Response(['page' => 1], Response::HTTP_CREATED, []);
     }
 }
