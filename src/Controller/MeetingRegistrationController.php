@@ -7,30 +7,25 @@ namespace App\Controller;
 
 use App\Entity\Meeting;
 use App\Entity\User;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\MeetingRepository;
 use App\Repository\UserRepository;
+use Symfony\Component\Routing\Annotation\Route;
+use OpenApi\Annotations as OA;
 
-/**
- * Meeting Controller
- *
- * @Route("/meetings/{id}")
- */
 class MeetingRegistrationController
 {
     /**
      * Register
      *
+     * @Route("/meetings/{id}/register/{user}", name="meeting_user_register", methods={"POST"})
+     * @OA\Tag(name="Meetings")
      */
     public function registerUserMeeting(
-        Meeting $meeting,
+        Meeting $id,
         User $user,
         EntityManagerInterface $em,
         MeetingRepository $meetingRepository,
@@ -59,8 +54,10 @@ class MeetingRegistrationController
     }
 
     /**
-     * Register
+     * Unregister
      *
+     * @Route("/meetings/{id}/unregister/{user}", name="meeting_user_unregister", methods={"POST"})
+     * @OA\Tag(name="Meetings")
      */
     public function unregisterUserMeeting(
         EntityManagerInterface $em,

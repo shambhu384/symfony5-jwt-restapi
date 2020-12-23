@@ -5,3 +5,9 @@
 /vendor/
 ###< symfony/framework-bundle ###
 tags
+.ctags
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+

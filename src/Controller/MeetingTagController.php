@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
+
 /**
  * Meeting Controller
  */
@@ -25,6 +27,7 @@ class MeetingTagController
 {
     /**
      * @Route("/tags", name="meeting_tag", methods={"GET"})
+     * @OA\Tag(name="Miscellaneous")
      */
     public function index()
     {

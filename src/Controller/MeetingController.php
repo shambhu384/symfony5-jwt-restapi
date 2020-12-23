@@ -8,35 +8,55 @@ use App\Entity\Meeting;
 use App\Event\MeetingRegisteredEvent;
 use App\Repository\MeetingRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use FOS\RestBundle\Context\Context;
+use FOS\RestBundle\Controller\AbstractFOSRestController;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Nelmio\ApiDocBundle\Annotation\Security;
+use OpenApi\Annotations as OA;
 use Symfony\Component\Cache\Adapter\AdapterInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Meeting Controller
- *
- * @Route("/meetings", name="meetins_")
  */
-class MeetingController
+class MeetingController extends AbstractFOSRestController
 {
-
     /**
      * Create Meeting.
      *
-     * @Route("/", name="post", methods="POST")
+     * @Route("/meetings", name="post", methods="POST")
      *
-     * @param Request $request
+     * @OA\RequestBody(
+     *   description= "Provide company search parameter",
+     *   required= true,
+     *   @OA\JsonContent(
+     *      type="object",
+     *       @OA\Property(property="name", type="string"),
+     *       @OA\Property(property="description", type="string"),
+     *       @OA\Property(property="meetingAt", type="string")
+     *    )
+     * )
+     *
+     * @OA\Response(
+     *     response=201,
+     *     description="Returns empty body with 201 status code"
+     * )
+     *
+     * @OA\Tag(name="Meetings")
+     * @Security(name="Bearer")
+     *
+     * @param AdapterInterface $cache
      * @param EventDispatcherInterface $dispatcher
      * @param ValidatorInterface $validator
      * @param AdapterInterface $cache
@@ -45,39 +65,66 @@ class MeetingController
      */
     public function postMeeting(
         AdapterInterface $cache,
-        ConstraintViolationListInterface $validationErrors,
         EntityManagerInterface $em,
         EventDispatcherInterface $dispatcher,
-        Meeting $meeting,
         Request $request,
-        UrlGeneratorInterface $router
+        SerializerInterface $serializer,
+        UrlGeneratorInterface $router,
+        ValidatorInterface $validator
     ): Response {
 
-        if (count($validationErrors) > 0) {
-            return new Response(array('errors' => $validationErrors), Response::HTTP_BAD_REQUEST);
+        // deserialize the json
+        try {
+            $meeting = $serializer->deserialize($request->getContent(), Meeting::class, 'json');
+        } catch (NotEncodableValueException $exception) {
+            throw new HttpException(Response::HTTP_BAD_REQUEST, 'Invalid Json');
         }
+
+        $errors = $validator->validate($meeting);
+
+        if (count($errors) > 0) {
+            /*
+             * Uses a __toString method on the $errors variable which is a
+             * ConstraintViolationList object. This gives us a nice string
+             * for debugging.
+             */
+            $json = $serializer->serialize($errors, 'json', array_merge([
+                'json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS,
+            ], []));
+
+            return new JsonResponse($json, Response::HTTP_BAD_REQUEST, [], true);
+        }
+
+        $meeting->setOrganiser($this->getUser()->getId());
 
         $em->persist($meeting);
         $em->flush();
 
         $dispatcher->dispatch(new MeetingRegisteredEvent($meeting));
-
-        $response = array(
-            'id' => $meeting->getId(),
-            'name' => $meeting->getName(),
-            'description' => $meeting->getDescription(),
-            'date' => $meeting->getDateTime(),
-            'url' => $router->generate(
-                'api_meeting_index',
-                array('id' => $meeting->getId(), 'version' => 'v1')
-            )
-        );
-        return new Response($meeting, Response::HTTP_CREATED, []);
+        return new Response(null, Response::HTTP_CREATED);
     }
 
     /**
      * Lists all Meetings.
-     * @Route("/", name="get_all", methods={"GET"})
+     * @Route("/meetings", name="get_all", methods={"GET"})
+     * 
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the meetings of an user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="order",
+     *     in="query",
+     *     description="The field used to order meetings",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Tag(name="Meetings")
+     * @Security(name="Bearer")
+  
      */
     public function getMeetings(CacheInterface $redisCache, MeetingRepository $meetingRepository, SerializerInterface $serializer)    {
         // add pagination on data using ParamFetcherInterface
@@ -86,17 +133,37 @@ class MeetingController
             return $meetingRepository->findAll();
         });
 
+          $context = new Context();
+    $context->setVersion('1.0');
+        $context->addGroup('user');
 
-        $content = $serializer->serialize($meetings, 'json', ['groups' => 'user']);
+        $view = $this->view($meetings, 200);
+            $view->setContext($context);
 
 
-        return new JsonResponse($content, Response::HTTP_OK, [], true);
+        return $this->handleView($view);
     }
 
     /**
      * Get Meeting.
      *
-     * @Route("/{id<\d+>?1}", name="meeting_index")
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the meetings of an user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="order",
+     *     in="query",
+     *     description="The field used to order meetings",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Tag(name="Meetings")
+     * @Security(name="Bearer")
+     * @Route("/meetings/{id<\d+>?1}", name="meeting_index", methods={"GET"})
      */
     public function getMeeting($id, MeetingRepository $meetingRepository): Response
     {
@@ -105,39 +172,39 @@ class MeetingController
         if (!$meeting) {
             throw new HttpException(404, 'Meeting not found');
         }
+
+        $context = new Context();
+        $context->setVersion('1.0');
+        $context->addGroup('user');
+
+        $view = $this->view($meeting, 200);
+        $view->setContext($context);
+
         // Move this in Meeting normalizer
-        $response = array(
-            'id' => $meeting->getId(),
-            'name' => $meeting->getName(),
-            'description' => $meeting->getDescription(),
-            'date' => $meeting->getDateTime(),
-            'users' => [],
-            'tags' => []
-        );
-        $users = $meeting->getUsers();
-        if ($users) {
-            foreach ($users as $user) {
-                $response['users'][] = array(
-                    'id' => $user->getId(),
-                    'fullname' => $user->getFullName(),
-                    'email' => $user->getEmail(),
-                );
-            }
-        }
-
-        $tags = $meeting->getTags();
-        if ($tags) {
-            foreach ($tags as $tag) {
-                $response['tags'][] = $tag->getName();
-            }
-        }
-
-        return new Response($meeting, Response::HTTP_OK);
+        return $this->handleView($view);
     }
 
     /**
      * Update an Meeting.
      *
+     * @OA\Response(
+     *     response=200,
+     *     description="Returns the meetings of an user",
+     *     @OA\JsonContent(
+     *        type="array",
+     *        @OA\Items(ref=@Model(type=Meeting::class, groups={"full"}))
+     *     )
+     * )
+     * @OA\Parameter(
+     *     name="order",
+     *     in="query",
+     *     description="The field used to order meetings",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Tag(name="Meetings")
+     * @Security(name="Bearer")
+     *
+     * @Route("/meetings/{id<\d+>?1}", name="meeting_put", methods={"PUT"})
      * @return View
      */
     public function putMeeting($id, Request $request, MeetingRepository $meetingRepository, EntityManagerInterface $em): View
@@ -147,7 +214,6 @@ class MeetingController
             throw new HttpException(404, 'Meeting not found');
         }
         $postdata = json_decode($request->getContent());
-        $meeting->setName($postdata->name);
         $meeting->setDescription($postdata->description);
         $meeting->setDateTime(new \DateTime($postdata->datetime));
         $em->persist($meeting);
@@ -158,6 +224,16 @@ class MeetingController
     /**
      * Delete an Meeting.
      *
+     * @OA\Parameter(
+     *     name="order",
+     *     in="query",
+     *     description="The field used to order meetings",
+     *     @OA\Schema(type="string")
+     * )
+     * @OA\Tag(name="Meetings")
+     * @Security(name="Bearer")
+     *
+     * @Route("/meetings/{id<\d+>?1}", name="meeting_delete", methods={"DELETE"})
      * @return View
      */
     public function deleteMeeting($id, Request $request, MeetingRepository $meetingRepository, EntityManagerInterface $em): View

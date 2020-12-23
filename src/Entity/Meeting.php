@@ -32,6 +32,8 @@ class Meeting
     public $id;
 
     /**
+     * @var string
+     *
      * @Assert\NotBlank()
      * @Assert\Length(min=10)
      * @Groups("user")
@@ -40,15 +42,13 @@ class Meeting
     public $name;
 
     /**
+     * @var string
+     *
      * @Assert\NotBlank()
+     * @Groups("user")
      * @ORM\Column(type="text")
      */
     public $description;
-
-    /**
-     * @ORM\Column(type="datetime")
-     */
-    private $datetime;
 
     /**
      * @var \Doctrine\Common\Collections\Collection|User[]
@@ -58,6 +58,7 @@ class Meeting
     protected $users;
 
     /**
+     * @var Tag[]
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", mappedBy="meetings")
      */
     private $tags;
@@ -83,6 +84,12 @@ class Meeting
     protected $updatedAt;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $meetingAt;
+
+    /**
+     * @var \DateTime
      * Constructor
      */
     public function __construct()
@@ -203,26 +210,6 @@ class Meeting
     }
 
     /**
-     * Get datetime.
-     *
-     * @return DateTime
-     */
-    public function getDateTime(): ?DateTime
-    {
-        return $this->datetime;
-    }
-
-    /**
-     * Set datetime.
-     *
-     * @param DateTime $datetime
-     */
-    public function setDateTime($datetime)
-    {
-        $this->datetime = $datetime;
-    }
-
-    /**
      * Get users.
      *
      * @return Collection
@@ -339,5 +326,17 @@ class Meeting
     public function __toString(): string
     {
         return (string) $this->getName();
+    }
+
+    public function getMeetingAt(): ?\DateTimeInterface
+    {
+        return $this->meetingAt;
+    }
+
+    public function setMeetingAt(\DateTimeInterface $meetingAt): self
+    {
+        $this->meetingAt = $meetingAt;
+
+        return $this;
     }
 }

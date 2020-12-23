@@ -18,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use OpenApi\Annotations as OA;
+use FOS\RestBundle\Context\Context;
 
 /**
  * User devices
@@ -28,21 +30,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class UserDeviceController
 {
     /**
-     * @Route("/devices", name="user_device")
+     * @Route("/devices", name="user_device", methods={"GET"})
+     * @OA\Tag(name="Miscellaneous")
      *
      * @return Response
      */
     public function device()
-    {
-        return new Response(['page' => 1], Response::HTTP_CREATED, []);
-    }
-
-    /**
-     * @Route("/devices", name="user_device")
-     *
-     * @return Response
-     */
-    public function decvices()
     {
         return new Response(['page' => 1], Response::HTTP_CREATED, []);
     }
